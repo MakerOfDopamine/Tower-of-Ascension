@@ -1,4 +1,4 @@
-const tabList = ["tower", "xp"]
+const tabList = ["tower", "exp"]
 
 function switchTab(tabn) {
     for (let i of tabList) {
