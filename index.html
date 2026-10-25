@@ -3,38 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Tower of Ascension</title>
+
+    <script src="viewport.js" defer></script>
+    <script src="break_eternity.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="debug.css" disabled>
 </head>
 <body>
-    <script src="break_eternity.js"></script>
-    <script src="format.js"></script>
-    <script src="saveload.js"></script>
-    <script src="tabs.js"></script>
-    <script src="experience.js"></script>
-    <script src="main.js"></script>
-
-    <button id="tower-tab-button" onclick="switchTab(0)">Tower</button>
-    <button id="xp-tab-button" onclick="switchTab(1)">XP</button>
-    <!-- <button onclick="setTab(0)">Tower</button> -->
-    <!-- <button onclick="setTab(0)">Tower</button> -->
-
-    <br>  
-    <div id="tower">
-        <span id="tower-status"></span><br>
-        <span id="tower-height"></span><br>
-        <span id="tower-level"></span>
-
-        <br><br>
-
-        <span id="next-unlock"></span>
+    <div id="viewport" class="viewport">
+        <div id="locked" style="position: absolute; z-index: 10; top: 16px; left: 16px;">
+            <button>Options</button>
+            <button>Statistics</button>
+            <div id="options-tab" style="position: relative; top: 16px; width: 128px; height: 160px; background-color: lightgrey; border: 4px solid black; padding: 4px;">
+                Sample Text
+            </div>
+        </div>
+        <div id="world" class="world">
+        </div>
     </div>
-
-    <div id="exp" style="display: none;">
-        <span id="exp-display"></span><br><br>
-        <span id="exp-reset"></span><br>
-        <button onclick="resetExp()" id="exp-reset-button">
-            Go down the tower for EXP
-        </button>
-    </div>
-
 </body>
 </html>

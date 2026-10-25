@@ -1,0 +1,48 @@
+<script src="break_eternity.js"></script>
+    <script src="format.js"></script>
+    <script src="saveload.js"></script>
+    <script src="tabs.js"></script>
+    <script src="experience.js"></script>
+    <script src="main.js"></script>
+
+
+    <div class="screen">
+        <div id="screen-left">
+
+        </div>
+        <div id="screen-right">
+            <button id="tower-tab-button" class="tab" onclick="switchTab(0)">Tower</button>
+            <button id="xp-tab-button" class="tab" onclick="switchTab(1)">Upgrades</button>
+            <!-- <button onclick="setTab(0)">Tower</button> -->
+            <!-- <button onclick="setTab(0)">Tower</button> -->
+
+            <hr>
+            <div id="tower">
+                <!-- <span id="tower-status"></span><br> -->
+                <span>You are currently on <span id="tower-level" class="important game-value"></span></span><br>
+                <span id="next-unlock"></span>
+                <div id="tower-height" class="tight vertical-align">
+                    <br>
+                    <div id="tower-height-progress-container" class="progress-container" role="progressbar">
+                        <div id="tower-height-progress" class="progress"></div>
+                    </div>
+                    <span id="tower-height-display" class="game-value"></span>
+                </div>
+
+                <br><hr><br>
+
+                <span id="exp-display"></span><br><br>
+                <span id="exp-reset" class="flavor"></span><br>
+                <span id="exp-reset-amount"></span><br>
+                <button onclick="resetExp()" id="exp-reset-button">
+                    Go down the tower for EXP
+                </button>
+            </div>
+
+            <div id="exp" style="display: none;">
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="animations.js"></script>
