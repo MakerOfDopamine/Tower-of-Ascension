@@ -21,11 +21,74 @@ body {
     will-change: transform
 }
 
-button {
+/* I hate that I had to do this. */
+.sticky-note-top {
+    position: absolute; 
+    top: 4px; 
+    left: 0; 
+    height: 20px; 
+    width: 100%; 
+    background-color: #8d8d59; 
+    box-shadow: 0px 2px #8d8d59,
+                0px 3px #8e8f5b,
+                0px 5px #93935e,
+                0px 6px #999964,
+                0px 8px #a2a271,
+                0px 9px #aeaf7e,
+                0px 11px #bdbd90,
+                0px 12px #c9c8a3,
+                0px 14px #d0d2b2,
+                0px 16px #d9d9be,
+                0px 18px #dbdcc6,
+                
+                0px -1px #8e8f5b,
+                0px -2px #93935e,
+                0px -3px #999964,
+                0px -4px #a2a271,
+                0px -5px #aeaf7e;
+    z-index: 1;
+}
+
+.fixed-tab {
+    position: relative; 
+    top: 16px; 
+    background-color: #ddddc9; 
+    padding: 8px 11px 11px 8px; /* The 11 is because 8 px + 3px box shadow because box shadow abuse */
+    min-height: 160px;
+    transform: rotate(-1.5deg);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tab-button {
     height: auto;
     font: inherit;
     color: lightgrey;
     background-color: #443333;
     border: 0;
-    box-shadow: 0px 0px 4px #442222;
+    box-shadow: #332222 1px 1px, #332222 2px 2px, #332222 3px 3px; /* box shadow abuse my beloved */
+    transition: all 0.1s ease-in-out;
+}
+
+.tab-button:active {
+    transform: translate(2px, 2px);
+    box-shadow: #332222 1px 1px;
+}
+
+.options-button {
+    height: auto;
+    position: relative;
+    font: inherit;
+    color: lightgrey;
+    padding: 3px 5px;
+    background-color: #664433;
+    border: 0;
+    box-shadow: #553322 1px 1px, #553322 2px 2px, #553322 3px 3px; /* box shadow abuse my beloved */
+    transition: all 0.1s ease-in-out;
+}
+
+.options-button:active {
+    transform: translate(2px, 2px);
+    box-shadow: #553322 1px 1px;
 }

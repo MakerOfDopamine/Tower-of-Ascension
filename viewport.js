@@ -36,7 +36,7 @@ viewport.addEventListener("mouseup", (e) => {
     isMouseDown = false
 })
 
-function addElement(id, width, height, offsetX, offsetY, styleObject = {}) {
+function addElement(id, width, height, offsetX, offsetY, title, ...styleObject) {
     const el = document.createElement("div")
     el.id = id
     el.style.position = "absolute"
@@ -44,15 +44,35 @@ function addElement(id, width, height, offsetX, offsetY, styleObject = {}) {
     el.style.height = `${height * 32}px`
     el.style.left = `${offsetX * 32}px`
     el.style.top = `${offsetY * 32}px`
+
+    if (title) {
+        const title_el = document.createElement("div")
+        title_el.style.width = "calc(100% - 8px)"
+        title_el.style.padding = "4px"
+        title_el.style.height = "16px"
+        title_el.style.backgroundColor = "#339944"
+        title_el.style.color = "#ccc"
+        title_el.innerHTML = title
+        
+        console.log(title_el)
+        el.appendChild(title_el)
+    }
     
     // Default
     el.style.background = "lightgrey"
-    el.style.border = "1px solid black"
+    //el.style.border = "1px solid black"
+    el.style.boxShadow = "var(--box-shadow-color) var(--box-shadow-size) var(--box-shadow-size)" // this is so that we can change the box shadow without having to know what color it was before because stupid css doesn't have a separate property for this thing for some reason
+    el.style.setProperty("--box-shadow-color", "#a3a3a3")
+    el.style.setProperty("--box-shadow-size", "0px")
     el.style.padding = "8px"
     el.style.boxSizing = "border-box" // WHY. are you. resizing my elements. this took me 20 minutes to find istg
 
-    for (let i of Object.keys(styleObject)) {
-        el.style[i] = styleObject[i]
+    for (let obj of styleObject) {
+        for (let i of Object.keys(obj)) {
+            if (el.style[i] === undefined) { // These should only be undefined when the element to set is custom and thus not exposed.
+                el.style.setProperty(i, obj[i])
+            } else {el.style[i] = obj[i]}
+        }
     }
     elements[id] = el
     world.appendChild(el)
@@ -62,12 +82,29 @@ function setText(id, text = "") {
     elements[id].textContent = text
 }
 
-const BG = {
-    "background": "rgb(188, 188, 211)"
+function displayHome() {
+    offsetX = window.innerWidth / 2 - 128
+    offsetY = window.innerHeight / 2 - 192
+
+    updateDisplay(0, 0);
 }
 
-addElement("test", 8, 12, 0, 0, BG)
-addElement("test2", 8, 10, 9, 0, BG)
-addElement("test3", 12, 4, 0, 13, BG)
+// Whee initialization go br
 
-setText("test", "hello world!")
+const BG = {
+    "background": "rgb(155, 188, 211)"
+}
+
+const PRIMARY = {
+    "--box-shadow-size": "8px"
+}
+
+const MINOR = {
+    "--box-shadow-size": "2px"
+}
+
+addElement("home", 8, 12, 0, 0, "The Tower", BG, PRIMARY)
+addElement("exp", 8, 10, 9, 0, "", BG, MINOR)
+addElement("rabbits", 12, 4, 0, 13, "", BG, MINOR)
+
+//setText("home", "hello world!")
