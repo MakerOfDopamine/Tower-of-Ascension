@@ -77,3 +77,20 @@ function format(value, neg = false, integer = false) {
         return "blah" // I SWEAR I WILL FINISH CODING THIS LATER
     }
 }
+
+function formatTime(value) {
+    value = new Decimal(value)
+    if (value.lte(0)) return "no time"
+    if (value.isNan()) return "NaN"
+    if (value.lte(60)) {
+        return `${(value.toFixed(1))} seconds`
+    } else if (value.lte(60 * 60)) {
+        return `${(value.div(60).floor().toFixed(0))} min ${value.mod(60).toFixed(0)} s`
+    } else if (value.lte(60 * 60 * 24)) {
+        return `${(value.div(3600).floor().toFixed(0))} hr ${(value.div(60).mod(60).floor().toFixed(0))} min ${value.mod(60).toFixed(0)} s`
+    } else if (value.lte(60 * 60 * 24 * 365)) {
+        return `${(value.div(86400).floor().toFixed(0))} days, ${(value.div(3600).mod(24).floor().toFixed(0))} hr ${(value.div(60).mod(60).floor().toFixed(0))} min ${value.mod(60).toFixed(0)} s`
+    } else {
+        return `${(value.div(86400 * 365).floor().toFixed(0))} years, ${(value.div(86400).mod(365).floor().toFixed(0))} days, ${(value.div(3600).mod(24).floor().toFixed(0))} hr ${(value.div(60).mod(60).floor().toFixed(0))} min ${value.mod(60).toFixed(0)} s`
+    }
+}

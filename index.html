@@ -8,6 +8,7 @@
     <script src="break_eternity.js"></script>
     <script src="format.js"></script>
     <script src="saveload.js"></script>
+    <script src="tabs.js"></script>
     <script src="main.js" defer></script>
 
     <link rel="stylesheet" href="style.css">
@@ -17,12 +18,12 @@
     <div id="viewport" class="viewport">
         <div id="locked" style="position: absolute; z-index: 10; top: 16px; left: 16px;">
             <button class="tab-button" onclick="showOptions()">Options</button>
-            <button class="tab-button" onclick="showOptions()">Statistics</button>
+            <button class="tab-button" onclick="showStatistics()">Statistics</button>
             <br><br><br>
 
             <!-- I swear I will eventually write the actual game -->
-            <div id="options-tab" class="fixed-tab">
-                <div class="tape"></div>
+            <div id="options-tab" class="fixed-tab" style="display: none">
+                <div class="tape" style="--x: -10; --y: -40; --rotation: -26;"></div>
                 <div class="sticky-note-top"></div>
                 <!-- ancient technique of magic offsetting blocks -->
                 <div style="position: relative; height: 40px;"></div> 
@@ -31,8 +32,14 @@
                 <button class="options-button" onclick="save()">Save the game</button>
                 <button class="options-button" onclick="reset_everything()">Reset the game</button>
             </div>
-            <div id="statistics-tab" class="fixed-tab" style="display: none;">
+            <div id="statistics-tab" class="fixed-tab" style="display: flex;">
+                <div class="tape" style="--x: -10; --y: -35; --rotation: -35;"></div>
+                <div class="sticky-note-top"></div>
+                <div style="position: relative; height: 35px;"></div> 
                 <!-- <button class="options-button" onclick="displayHome()">Teleport back to origin</button> -->
+
+                <div id="statistics-main">Text</div>
+                <div id="statistics-unlocks">Text</div>
             </div>
         </div>
         <div id="world" class="world">

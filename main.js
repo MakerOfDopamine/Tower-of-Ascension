@@ -3,7 +3,9 @@ let player = {
     level: new Decimal(1),
     exp: {
         value: new Decimal(0)
-    }
+    },
+    saveStart: Date.now(),
+    unlocks: 0
 }
 
 let lastTick = Date.now()
@@ -20,6 +22,23 @@ function getFloorHeight(F) {
     return new Decimal(10).mul(F.pow_base(1.01)).mul(F.pow(2).pow_base(1.00001))
 }
 
+function checkForUnlocks() {
+    switch (player.unlocks) {
+        case 0:
+            if (player.level.gte(10)) {
+                player.unlocks = 1
+            } else {
+                setText("statistics-unlocks", "You might unlock something new on floor 10...")
+                setVisibility(buttons["home-test-button"], false)
+            }
+            break
+        case 1:
+            setText("statistics-unlocks", "You have unlocked all there is to unlock! For now...")
+            setVisibility(buttons["home-test-button"], true)
+            break
+    }
+}
+
 const gameLoop = setInterval(() => {
     let dt = Date.now() - lastTick
     let speed = getPlayerSpeed()
@@ -30,10 +49,12 @@ const gameLoop = setInterval(() => {
         You are on floor <b>${format(player.level, false, true)}</b>.
 
         You are <b>${format(player.height)}</b> / <b>${format(height_floor)}</b> m up this floor.
-
     `)
 
-    document.getElementById(bars["height-bar"]).style.width = `${player.height.div(height_floor).mul(100).toNumber()}%`
+    updateStatistics()
+    checkForUnlocks()
+
+    bars["home-height-bar"].style.width = `${player.height.div(height_floor).mul(100).toNumber()}%`
     if (player.height.gte(height_floor)) {
         player.height = player.height.sub(height_floor)
         player.level = player.level.add(1)

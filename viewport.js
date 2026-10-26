@@ -2,6 +2,7 @@ const viewport = document.getElementById("viewport")
 const world = document.getElementById("world")
 const elements = {}
 const bars = {}
+const buttons = {}
 const grid_size = 32
 const parallax_scale = 0.2
 
@@ -92,6 +93,8 @@ function addBar(parent_id, bar_id = parent_id, ...styleObject) {
     const bar_inner_el = document.createElement("div")
     bar_el.id = `${parent_id}-${bar_id}-container`
     bar_inner_el.id = `${parent_id}-${bar_id}-bar`
+    bar_el.style.marginBottom = "8px"
+    bar_el.style.marginTop = "8px"
 
     bar_el.classList.add("progress-container")
     bar_el.role = "progressbar"
@@ -107,11 +110,34 @@ function addBar(parent_id, bar_id = parent_id, ...styleObject) {
     }
 
     elements[parent_id].appendChild(bar_el)
-    bars[bar_id] = bar_inner_el.id
+    bars[`${parent_id}-${bar_id}`] = bar_inner_el
+}
+
+function addButton(parent_id, button_id = parent_id, content, onclick = () => {}, ...styleObject) {
+    const button_el = document.createElement("button")
+    button_el.id = `${parent_id}-${button_id}-button`
+    button_el.innerHTML = content
+    button_el.onclick = onclick
+
+    button_el.classList.add("game-button")
+    for (let obj of styleObject) {
+        for (let i of Object.keys(obj)) {
+            if (button_el.style[i] === undefined) {
+                button_el.style.setProperty(i, obj[i])
+            } else {button_el.style[i] = obj[i]}
+        }
+    }
+
+    elements[parent_id].appendChild(button_el)
+    buttons[`${parent_id}-${button_id}`] = button_el
 }
 
 function setText(id, text = "") {
     document.getElementById(id).innerHTML = text
+}
+
+function setVisibility(obj, visible, default_visibility = "block") {
+    (typeof obj == "string" ? document.getElementById(obj) : obj).style.display = (visible ? default_visibility : "none")
 }
 
 function displayHome() {
@@ -135,10 +161,21 @@ const MINOR = {
     "--box-shadow-size": "2px"
 }
 
+const BUTTON_BASE = {
+    "height": "auto",
+    "font": "inherit",
+    "color": "lightgrey",
+    "backgroundColor": "#444444",
+    "border": "0",
+    "boxShadow": "#222222 1px 1px",
+    "transition": "all 0.1s ease-in-out"
+}
+
 addElement("home", 8, 8, 0, 0, "The Tower", BG, PRIMARY)
 //addElement("exp", 8, 10, 9, 0, "", BG, MINOR)
 addElement("rabbits", 12, 4, 0, 13, "bunnies :3", BG, MINOR)
 
 addBar("home", "height-bar")
+addButton("home", "test-button", "Press me", () => {alert("Hello!")}, BUTTON_BASE)
 
 setText("rabbits", "🐇!")

@@ -55,9 +55,9 @@ body {
 
 .tape {
     position: absolute; 
-    top: -10px;
-    left: -40px;
-    transform: rotate(-26deg);
+    top: calc(var(--x) * 1px);
+    left: calc(var(--y) * 1px);
+    transform: rotate(calc(var(--rotation) * 1deg));
     width: 100px;
     height: 30px;
     background-color: #ffffdd44;
@@ -69,6 +69,7 @@ body {
     top: 16px; 
     background-color: #ddddc9; 
     padding: 8px 11px 11px 8px; /* The 11 is because 8 px + 3px box shadow because box shadow abuse */
+    max-width: 300px;
     min-height: 160px;
     transform: rotate(-1.5deg);
     display: flex;
