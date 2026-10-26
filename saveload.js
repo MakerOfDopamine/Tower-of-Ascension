@@ -56,8 +56,3 @@ function reset_everything(noprompt) {
     localStorage.removeItem("toa")
     document.location.reload()
 }
-
-setInterval(() => {
-    save()
-    console.log("saved")
-}, 10000)

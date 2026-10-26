@@ -6,7 +6,9 @@
 
     <script src="viewport.js" defer></script>
     <script src="break_eternity.js"></script>
-    <script src="main.js"></script>
+    <script src="format.js"></script>
+    <script src="saveload.js"></script>
+    <script src="main.js" defer></script>
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="debug.css" disabled>
@@ -16,7 +18,11 @@
         <div id="locked" style="position: absolute; z-index: 10; top: 16px; left: 16px;">
             <button class="tab-button" onclick="showOptions()">Options</button>
             <button class="tab-button" onclick="showOptions()">Statistics</button>
+            <br><br><br>
+
+            <!-- I swear I will eventually write the actual game -->
             <div id="options-tab" class="fixed-tab">
+                <div class="tape"></div>
                 <div class="sticky-note-top"></div>
                 <!-- ancient technique of magic offsetting blocks -->
                 <div style="position: relative; height: 40px;"></div> 

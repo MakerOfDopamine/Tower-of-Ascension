@@ -1,12 +1,14 @@
 const viewport = document.getElementById("viewport")
 const world = document.getElementById("world")
 const elements = {}
+const bars = {}
+const grid_size = 32
+const parallax_scale = 0.2
 
 let mouseX = 0
 let mouseY = 0
 let offsetX = window.innerWidth / 2 - 128
 let offsetY = window.innerHeight / 2 - 192
-let parallax_scale = 0.25
 let isMouseDown = false
 
 function updateDisplay(bx, by) {
@@ -38,12 +40,12 @@ viewport.addEventListener("mouseup", (e) => {
 
 function addElement(id, width, height, offsetX, offsetY, title, ...styleObject) {
     const el = document.createElement("div")
-    el.id = id
+    el.id = `${id}-container`
     el.style.position = "absolute"
-    el.style.width = `${width * 32}px`
-    el.style.height = `${height * 32}px`
-    el.style.left = `${offsetX * 32}px`
-    el.style.top = `${offsetY * 32}px`
+    el.style.width = `${width * grid_size}px`
+    el.style.height = `${height * grid_size}px`
+    el.style.left = `${offsetX * grid_size}px`
+    el.style.top = `${offsetY * grid_size}px`
 
     if (title) {
         const title_el = document.createElement("div")
@@ -54,7 +56,6 @@ function addElement(id, width, height, offsetX, offsetY, title, ...styleObject) 
         title_el.style.color = "#ccc"
         title_el.innerHTML = title
         
-        console.log(title_el)
         el.appendChild(title_el)
     }
     
@@ -74,12 +75,43 @@ function addElement(id, width, height, offsetX, offsetY, title, ...styleObject) 
             } else {el.style[i] = obj[i]}
         }
     }
+
+    const content_el = document.createElement("div")
+    content_el.id = id;
+    content_el.style.height = "fit-content";
+    content_el.style.paddingTop = "8px"
+
+    el.classList.add("newline")
+    el.appendChild(content_el)
     elements[id] = el
     world.appendChild(el)
 }
 
+function addBar(parent_id, bar_id = parent_id, ...styleObject) {
+    const bar_el = document.createElement("div")
+    const bar_inner_el = document.createElement("div")
+    bar_el.id = `${parent_id}-${bar_id}-container`
+    bar_inner_el.id = `${parent_id}-${bar_id}-bar`
+
+    bar_el.classList.add("progress-container")
+    bar_el.role = "progressbar"
+    bar_inner_el.classList.add("progress")
+
+    bar_el.appendChild(bar_inner_el)
+    for (let obj of styleObject) {
+        for (let i of Object.keys(obj)) {
+            if (bar_el.style[i] === undefined) { // These should only be undefined when the element to set is custom and thus not exposed.
+                bar_el.style.setProperty(i, obj[i])
+            } else {bar_el.style[i] = obj[i]}
+        }
+    }
+
+    elements[parent_id].appendChild(bar_el)
+    bars[bar_id] = bar_inner_el.id
+}
+
 function setText(id, text = "") {
-    elements[id].textContent = text
+    document.getElementById(id).innerHTML = text
 }
 
 function displayHome() {
@@ -103,8 +135,10 @@ const MINOR = {
     "--box-shadow-size": "2px"
 }
 
-addElement("home", 8, 12, 0, 0, "The Tower", BG, PRIMARY)
-addElement("exp", 8, 10, 9, 0, "", BG, MINOR)
-addElement("rabbits", 12, 4, 0, 13, "", BG, MINOR)
+addElement("home", 8, 8, 0, 0, "The Tower", BG, PRIMARY)
+//addElement("exp", 8, 10, 9, 0, "", BG, MINOR)
+addElement("rabbits", 12, 4, 0, 13, "bunnies :3", BG, MINOR)
 
-//setText("home", "hello world!")
+addBar("home", "height-bar")
+
+setText("rabbits", "🐇!")
