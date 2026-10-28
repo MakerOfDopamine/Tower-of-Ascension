@@ -13,3 +13,4 @@ function updateStatistics() {
         You have played for a total of ${formatTime((Date.now() - player.saveStart) / 1000)}.
     `
 }
+

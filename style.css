@@ -1,13 +1,11 @@
+/* important stuff */
+
 body {
     overflow: hidden;
     height: 100vh;
     width: 100vw;
     margin: 0;
     font-family: 'Courier New', Courier, monospace;
-}
-
-.newline {
-    white-space: pre-line;
 }
 
 .viewport {
@@ -17,53 +15,6 @@ body {
     box-sizing: border-box;
 }
 
-#world {
-    position: absolute;
-    height: inherit;
-    width: inherit;
-    transform: translate(0, 0);
-    will-change: transform
-}
-
-/* I hate that I had to do this. */
-.sticky-note-top {
-    position: absolute; 
-    top: 4px; 
-    left: 0; 
-    height: 20px; 
-    width: 100%; 
-    background-color: #8d8d59; 
-    box-shadow: 0px 2px #8d8d59,
-                0px 3px #8e8f5b,
-                0px 5px #93935e,
-                0px 6px #999964,
-                0px 8px #a2a271,
-                0px 9px #aeaf7e,
-                0px 11px #bdbd90,
-                0px 12px #c9c8a3,
-                0px 14px #d0d2b2,
-                0px 16px #d9d9be,
-                0px 18px #dbdcc6,
-                
-                0px -1px #8e8f5b,
-                0px -2px #93935e,
-                0px -3px #999964,
-                0px -4px #a2a271,
-                0px -5px #aeaf7e;
-    z-index: 1;
-}
-
-.tape {
-    position: absolute; 
-    top: calc(var(--x) * 1px);
-    left: calc(var(--y) * 1px);
-    transform: rotate(calc(var(--rotation) * 1deg));
-    width: 100px;
-    height: 30px;
-    background-color: #ffffdd44;
-    z-index: 2;
-}
-
 .fixed-tab {
     position: relative; 
     top: 16px; 
@@ -71,11 +22,14 @@ body {
     padding: 8px 11px 11px 8px; /* The 11 is because 8 px + 3px box shadow because box shadow abuse */
     max-width: 300px;
     min-height: 160px;
-    transform: rotate(-1.5deg);
+    /* the sticky note text gets blurrier when the home box is dragged over it because compositor bullshit, 
+       so the rotation unfortunately needed to be removed */
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
+
+/* stuff related to the fixed tabs */
 
 .tab-button {
     height: auto;
@@ -109,7 +63,62 @@ body {
     box-shadow: #553322 1px 1px;
 }
 
-.progress-container {
+/* I hate that I had to do this. */
+.sticky-note-top {
+    position: absolute; 
+    top: 10px; 
+    left: 0; 
+    height: 20px; 
+    width: 100%; 
+    background-color: #8d8d59; 
+    box-shadow: 0px 2px #8d8d59,
+                0px 4px #8e8f5b,
+                0px 6px #93935e,
+                0px 8px #999964,
+                0px 10px #a2a271,
+                0px 12px #aeaf7e,
+                0px 14px #bdbd90,
+                0px 16px #c9c8a3,
+                0px 18px #d0d2b2,
+                0px 20px #d9d9be,
+                0px 22px #dbdcc6,
+                
+                0px -2px #93935e,
+                0px -4px #a2a271,
+                0px -6px #bdbd90,
+                0px -8px #c9c8a3,
+                0px -10px #d0d2b2;
+    z-index: 1;
+}
+
+.tape {
+    position: absolute; 
+    top: calc(var(--x) * 1px);
+    left: calc(var(--y) * 1px);
+    transform: rotate(calc(var(--rotation) * 1deg));
+    width: 100px;
+    height: 30px;
+    background-color: #ffffdd44;
+    z-index: 2;
+}
+
+#world {
+    position: absolute;
+    height: inherit;
+    width: inherit;
+    transform: translate(0, 0);
+    will-change: transform
+}
+
+/* miscellaneous stuff */
+
+.flavor-text {
+    font-size: 14px;
+    color: #555;
+}
+
+.bar-container {
+    margin: 8px 0px;
     background-color: rgb(211, 233, 255);
     height: 20px;
     border-radius: calc(infinity * 1px);
@@ -118,7 +127,7 @@ body {
     box-shadow: inset 0 1px 3px #0000003f;
     border: 1px solid black;
 
-    .progress {
+    .bar {
         height: 20px;
         width: 0%;
         background: rgb(133, 155, 188);
@@ -127,4 +136,74 @@ body {
         justify-content: center;
         border-radius: 12px 0 0 12px;
     }
+}
+
+.title {
+    position: relative;
+    width: calc(100% - 8px);
+    padding: 4px;
+    height: 16px;
+    background-color: #449955;
+    color: #ddd;
+    display: inline;
+}
+
+.tab {
+    position: absolute;
+    width: calc(var(--x) * 32px);
+    height: calc(var(--y) * 32px);
+    left: calc(var(--ox) * 32px);
+    top: calc(var(--oy) * 32px);
+    background: lightgrey;
+    --box-shadow-color: #a3a3a3;
+    --box-shadow-size: 0px;
+    box-shadow: var(--box-shadow-color) var(--box-shadow-size) var(--box-shadow-size);
+    padding: 8px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    height: fit-content;
+}
+
+.newline {
+    white-space: pre-line;
+}
+
+/* custom aesthetic classes */
+
+.blue-bg {
+    background: rgb(155, 188, 211);
+}
+
+.button-base {
+    height: auto;
+    font: inherit;
+    --button-color: lightgrey;
+    color: var(--button-color);
+    --bg-color: #444444;
+    background-color: var(--bg-color);
+    border: 0;
+    padding: 2px;
+    box-shadow: color-mix(in srgb, var(--bg-color) 50%, #000000 50%) 1px 1px;
+    transition: all 0.1s ease-in-out
+}
+
+.primary {
+    --box-shadow-size: 8px;
+}
+
+.major {
+    --box-shadow-size: 4px;
+}
+
+.minor {
+    --box-shadow-size: 2px;
+}
+
+.flavor-text {
+    font-size: 12px;
+    color: grey;
 }

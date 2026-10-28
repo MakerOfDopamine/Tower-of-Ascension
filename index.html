@@ -9,6 +9,7 @@
     <script src="format.js"></script>
     <script src="saveload.js"></script>
     <script src="tabs.js"></script>
+    <script src="experience.js"></script>
     <script src="main.js" defer></script>
 
     <link rel="stylesheet" href="style.css">
@@ -43,6 +44,40 @@
             </div>
         </div>
         <div id="world" class="world">
+            <div id="home-tab" class="tab blue-bg primary" style="--x: 8; --y: 8; --ox: 0; --oy: 0">
+                <div id="home-title" class="title">
+                    "The Tower"
+                </div>
+                <div id="home-container" class="container newline">
+                    You are on floor <b id="home-level-display"></b>.
+                    You are <b id="home-current-height"></b> / <b id="home-needed-height"></b> m up this floor.
+                </div>
+                <div id="home-height-bar-container" class="bar-container">
+                    <div id="home-height-bar" class="bar"></div>
+                </div>
+                <button id="unlock-0-button" class="button-base" onclick="unlock(0)">
+                    You see an elevator...?
+                </button>
+            </div>
+            <div id="exp-tab" class="tab blue-bg primary" style="--x: 10; --y: 10; --ox: 9; --oy: 0; display: none;">
+                <div id="exp-title" class="title">
+                    Experience
+                </div>
+                <div id="exp-container" class="container">
+                    <div class="flavor-text newline">
+                        You see an elevator! To your dismay, the elevator seems to only be able to go down.
+
+                        Maybe with your <i>experience</i> of climbing the tower, you could climb the tower more efficiently?
+                    </div>
+                    <hr>
+                    <div id="exp-can-reset">
+                        If you go down <u>the elevator</u> now, you will gain <b id="exp-reset-amount"></b> EXP.
+                    </div>
+                    <div id="exp-cannot-reset">
+                        You haven't seen an elevator around yet. The last time, you saw the elevator on floor <b>10</b>.
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
