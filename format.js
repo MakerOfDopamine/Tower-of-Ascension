@@ -94,3 +94,14 @@ function formatTime(value) {
         return `${(value.div(86400 * 365).floor().toFixed(0))} years, ${(value.div(86400).mod(365).floor().toFixed(0))} days, ${(value.div(3600).mod(24).floor().toFixed(0))} hr ${(value.div(60).mod(60).floor().toFixed(0))} min ${value.mod(60).toFixed(0)} s`
     }
 }
+
+function formatEffect(value) {
+    if (value.eq(0)) return "0%"
+    if (value.lt(0)) {
+        return `-${format(value.mul(-100))}%`
+    } else if (value.lte(10)) {
+        return `+${format(value.mul(100))}%`
+    } else {
+        return `${format(value,add(1))} x`
+    }
+}

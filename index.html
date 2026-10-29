@@ -46,7 +46,7 @@
         <div id="world" class="world">
             <div id="home-tab" class="tab blue-bg primary" style="--x: 8; --y: 8; --ox: 0; --oy: 0">
                 <div id="home-title" class="title">
-                    "The Tower"
+                    The Tower
                 </div>
                 <div id="home-container" class="container newline">
                     You are on floor <b id="home-level-display"></b>.
@@ -59,7 +59,7 @@
                     You see an elevator...?
                 </button>
             </div>
-            <div id="exp-tab" class="tab blue-bg primary" style="--x: 10; --y: 10; --ox: 9; --oy: 0; display: none;">
+            <div id="exp-tab" class="tab blue-bg primary" style="--x: 11; --y: 8; --ox: 9; --oy: 0; display: none;">
                 <div id="exp-title" class="title">
                     Experience
                 </div>
@@ -71,14 +71,96 @@
                     </div>
                     <hr>
                     <div id="exp-can-reset">
-                        If you go down <u>the elevator</u> now, you will gain <b id="exp-reset-amount"></b> EXP.
+                        If you go down the elevator now, you will gain <b id="exp-reset-amount"></b> EXP.
+                        <br><br>
+                        <button id="exp-reset-button" class="button-base green-button" onclick="resetExp()">
+                            I must make my way down to become more <i>experienced</i>...
+                        </button>
                     </div>
                     <div id="exp-cannot-reset">
-                        You haven't seen an elevator around yet. The last time, you saw the elevator on floor <b>10</b>.
+                        You haven't seen an elevator around yet.
+                    </div>
+                </div>
+            </div>
+            <div id="exp-upgrades-tab" class="tab green-bg major" style="--x: 20; --y: 36; --ox: 0; --oy: 9; display: none;">
+                <div id="exp-upgrades-title" class="title">
+                    Experience Upgrades
+                </div>
+                <div id="exp-upgrades-container" class="container">
+                    <div class="big-flavor-text newline">
+                        You've climbed the tower! But you still haven't found what's at the top of the tower.
+
+                        Luckily, you think that with your experience of walking up a spiral staircase, the second time up should be much quicker.
+
+                        You can also spend your experience on some useful trinkets!
+                    </div>
+                    <hr>
+                    <div class="newline">
+                        You currently have <b id="exp-amount"></b> EXP to spend.
+                        Your unspent experience currently provides you with <b id="exp-height-multiplier"></b> faster climbing.
+
+                    </div>
+                    <div id="exp-upgrades-grid" class="item-grid" style="--cols: 4">
+                        <button id="exp-upgrade-0" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(0)" data-tooltip="exp-upgrade-0-data">
+                            <img src="assets/exp_upgrade_0.png" draggable="false"></img>
+                        </button>
+                        <template id="exp-upgrade-0-data" class="tooltip-template">
+                            <h3>"Welcome to the town!"</h3>
+                            An egg. For some mysterious reason, this egg boosts your climbing speed by 100% and your experience gain by 100%. (First and last large number boost for a long time...)<br>
+                            <br>
+                            = +100% <span class="climbspeed">climbing speed</span><br>
+                            = +100% <span class="experience">experience</span> gain<br>
+                            <br>
+                            <b>Cost: 1 EXP</b><br>
+                            <span id="exp-upgrade-0-data-bought"></span>
+                        </template>
+
+                        <button id="exp-upgrade-1" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(1)" data-tooltip="exp-upgrade-1-data">
+                            <img src="assets/exp_upgrade_1.png" draggable="false"></img>
+                        </button>
+                        <template id="exp-upgrade-1-data" class="tooltip-template">
+                            <h3>Potion of Speed</h3>
+                            <span class="flavor-text-hc">Are we really already getting to the generic items?</span><br>
+                            <br>
+                            Climb that tower 2% faster every time you drink this potion!<br>
+                            <br>
+                            = +2% <span class="climbspeed">climbing speed</span><br>
+                            <br>
+                            <b>Cost: <span id="exp-upgrade-1-data-cost"></span> EXP</b><br>
+                            Bought <span id="exp-upgrade-1-data-bought"></span> times<br>
+                            Currently: <span id="exp-upgrade-1-data-effect"></span>
+                        </template>
+
+                        <button id="exp-upgrade-2" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(2)" data-tooltip="exp-upgrade-2-data">
+                            <img src="assets/exp_upgrade_2.png" draggable="false"></img>
+                        </button>
+                        <template id="exp-upgrade-2-data" class="tooltip-template">
+                            <h3>Potion of Knowledge</h3>
+                            <span class="flavor-text-hc">Okay, fine.</span><br>
+                            <br>
+                            Learn more from repeatedly climbing up a spiral staircase 2% faster every time you drink this potion!<br>
+                            <br>
+                            = +2% <span class="experience">experience</span> gain<br>
+                            <br>
+                            <b>Cost: <span id="exp-upgrade-2-data-cost"></span> EXP</b><br>
+                            Bought <span id="exp-upgrade-2-data-bought"></span> times<br>
+                            Currently: <span id="exp-upgrade-2-data-effect"></span>
+                        </template>
+
+                        <button id="exp-upgrade-3" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(3)" data-tooltip="no-data">
+                            <img src="assets/no_img.png" draggable="false"></img>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+        <div id="tooltip-object" class="tooltip">
+            Sample tooltip text
+        </div>
+        <template id="no-data" class="tooltip-template">
+            This is a placeholder item
+            meow mrrp owo :3
+        </template>
     </div>
 </body>
 </html>

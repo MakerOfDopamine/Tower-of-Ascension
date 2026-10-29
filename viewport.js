@@ -1,5 +1,6 @@
 const viewport = document.getElementById("viewport")
 const world = document.getElementById("world")
+const tooltip = document.getElementById("tooltip-object")
 const elements = {}
 const bars = {}
 const buttons = {}
@@ -29,6 +30,8 @@ viewport.addEventListener("mousemove", (e) => {
     if (isMouseDown) {
         updateDisplay((mouseX - e.clientX), (mouseY - e.clientY))
     }
+
+    tooltip.style.transform = `translate(${e.clientX + 20}px, ${e.clientY + 20}px)`
 })
 
 viewport.addEventListener("mouseup", (e) => {
@@ -43,3 +46,10 @@ function displayHome() {
 
     updateDisplay(0, 0);
 }
+
+document.querySelectorAll("*.show-tooltip").forEach((el) => {
+    el.addEventListener("pointerenter", () => {
+        const tooltipElement = document.getElementById(el.getAttribute("data-tooltip"))
+        tooltip.innerHTML = tooltipElement.innerHTML
+    })
+})
