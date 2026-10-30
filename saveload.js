@@ -71,6 +71,7 @@ function validate_save() {
     // Fixes by version
     // (for example if i accidentally Mess Up and inflate to 1e10000)
     if (player.version != default_player.version) {
+        player.won = false
         switch (player.version) {
             // The lack of break statments here is so that every case runs every other case underneath it and 
             // every case has what was fixed in that version only

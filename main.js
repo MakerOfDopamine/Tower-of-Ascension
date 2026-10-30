@@ -1,6 +1,7 @@
 const default_player = {
     version: "indev_3",
     lastTick: Date.now(),
+    won: false,
     height: new Decimal(0),
     level: new Decimal(1),
     exp: {
@@ -190,6 +191,14 @@ const gameLoop = setInterval(() => {
     checkForUnlocks()
     updateTooltipData()
 
+    // REMEMBER TO CHANGE THIS EVERY UPDATE!!!!
+    setText("win-con-status", format(player.exp.value))
+    setText("have-you-won", player.won ? "won! :D" : "not won :(")
+    if (!player.won && player.exp.value.gte(1e5)) {
+        player.won = true
+        alert(`Congratulations! You have won ${player.version} of the Tower of Ascension! For now...`)
+    }
+
     //bars["home-height-bar"].style.width = `${player.height.div(height_floor).mul(100).toNumber()}%`
     setWidth("home-height-bar", player.height.div(height_floor).mul(100).toNumber())
     if (player.height.gte(height_floor)) {
@@ -224,3 +233,4 @@ if (load()) {
 const saveLoop = setInterval(() => {
     save()
 }, 15000)
+
