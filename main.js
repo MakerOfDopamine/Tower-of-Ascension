@@ -1,22 +1,26 @@
-let player = {
+const default_player = {
+    version: "indev_3",
+    lastTick: Date.now(),
     height: new Decimal(0),
     level: new Decimal(1),
     exp: {
         value: new Decimal(0),
-        upgrades: [false, 0, 0]
+        upgrades: [false, 0, 0, 0, false]
     },
     saveStart: Date.now(),
     unlocks: 0,
     area_unlocks: 0
 }
 
+let player = default_player
+
 const STATIC = {
     exp: {
-        upg_max: [0, 100, 100]
+        upg_max: [0, 100, 100, 8, 0]
     }
 }
 
-let lastTick = Date.now()
+let lastTick = player.lastTick
 
 function setText(id, text = "") {
     document.getElementById(id).textContent = text
@@ -40,6 +44,7 @@ function getPlayerSpeed() {
     // Multipliers
     base = base.mul(getExperienceHeightBoost())
     if (player.exp.upgrades[0]) base = base.mul(2)
+    if (player.exp.upgrades[4]) base = base.mul(getExperienceUpgradeEffect(4))
     base = base.mul(getExperienceUpgradeEffect(1))
 
     // Flat speed
@@ -54,9 +59,22 @@ function getPlayerSpeed() {
 function getFloorHeight(F) {
     // Height of floor F
     F = new Decimal(F)
-    return new Decimal(5).mul(F.pow_base(1.01)).mul(F.pow(2).pow_base(1.00001))
+    return new Decimal(5).mul(F.pow_base(1.02))
 }
 
+function getAnimationSpeed() {
+    let speed = getPlayerSpeed()
+    if (speed.lt(0.1)) return 0
+    if (speed.lt(10)) return speed.toNumber()
+    if (speed.lt(1e90)) return 9 + speed.log10().toNumber()
+    return (99 + new Decimal(1e90).slog().toNumber()) + speed.slog().min(101).toNumber()
+}
+
+function _skip_seconds(x) {
+    lastTick -= x * 1000
+}
+
+const UNLOCKED_EVERYTHING = "You've unlocked everything... for now."
 function checkForUnlocks() {
     switch (player.unlocks) {
         case 0:
@@ -68,23 +86,30 @@ function checkForUnlocks() {
             }
             break
         case 1:
-            setText("statistics-unlocks", "You might unlock something by becoming more experienced.")
+            setText("statistics-unlocks", "You might unlock something by becoming more experienced...")
             setVisibility("unlock-0-button", player.area_unlocks == 0 ? true : false)
             break
         case 2:
-            setText("statistics-unlocks", "You've unlocked everything... for now.")
+            setText("statistics-unlocks", "You might unlock something by improving something architectural...")
             setVisibility("unlock-0-button", false)
+            break
+        case 3:
+            setText("statistics-unlocks", UNLOCKED_EVERYTHING)
+            setVisibility("unlock-0-button", false)
+            break
     }
 }
 
 function unlock(x) {
-    if (player.unlocks == player.area_unlocks) return
     switch (x) {
         case 0:
             document.getElementById("exp-tab").style.display = "flex";
             break
         case 1:
             document.getElementById("exp-upgrades-tab").style.display = "flex";
+            break
+        case 2:
+            document.getElementById("tower-animation-tab").style.display = "flex";
             break
     }
     player.area_unlocks = player.unlocks
@@ -101,13 +126,19 @@ function _set(id, val) {
 }
 
 function updateTooltipData() {
-    _set("exp-upgrade-0-data-bought", player.exp.upgrades[0] ? "Bought!" : "Not bought")
-    _set("exp-upgrade-1-data-cost", format(getExpUpgradeCost(1), false, true))
-    _set("exp-upgrade-1-data-bought", `${player.exp.upgrades[1]} / ${STATIC.exp.upg_max[1]}`)
+    for (let i = 0; i < player.exp.upgrades.length; i++) {
+        if (STATIC.exp.upg_max[i] == 0) {
+            _set(`exp-upgrade-${i}-data-bought`, player.exp.upgrades[i] ? "Bought!" : "Not bought")
+        } else {
+            _set(`exp-upgrade-${i}-data-cost`, format(getExpUpgradeCost(i), false, true))
+            _set(`exp-upgrade-${i}-data-bought`, `${player.exp.upgrades[i]} / ${STATIC.exp.upg_max[1]}`)
+        }
+    }
+    
     _set("exp-upgrade-1-data-effect", `${formatEffect(getExperienceUpgradeEffect(1).sub(1))}`)
-    _set("exp-upgrade-2-data-cost", format(getExpUpgradeCost(2), false, true))
-    _set("exp-upgrade-2-data-bought", `${player.exp.upgrades[2]} / ${STATIC.exp.upg_max[2]}`)
     _set("exp-upgrade-2-data-effect", `${formatEffect(getExperienceUpgradeEffect(2).sub(1))}`)
+    _set("exp-upgrade-3-data-effect", `${getExperienceUpgradeEffect(3).toFixed(2)}`)
+    _set("exp-upgrade-4-data-effect", `${formatEffect(getExperienceUpgradeEffect(4).sub(1))}`)
 }
 
 function updateUpgradeBackdrops() {
@@ -128,6 +159,7 @@ function updateUpgradeBackdrops() {
 
 const DEVSPEED = 1
 const gameLoop = setInterval(() => {
+    player.lastTick = lastTick
     let dt = Date.now() - lastTick
     let speed = getPlayerSpeed()
     let height_floor = getFloorHeight(player.level.sub(1))
@@ -161,17 +193,31 @@ const gameLoop = setInterval(() => {
     //bars["home-height-bar"].style.width = `${player.height.div(height_floor).mul(100).toNumber()}%`
     setWidth("home-height-bar", player.height.div(height_floor).mul(100).toNumber())
     if (player.height.gte(height_floor)) {
-        player.height = player.height.sub(height_floor)
-        player.level = player.level.add(1)
+        // Thanks claude for explaining to me how to invert sums of geometric series
+        let max_floors = player.height.div(player.level.sub(1).pow_base(1.02).mul(250)).add(1).log10().div(new Decimal(1.02).log10()).ceil().sub(2)
+        player.height = player.height.sub(new Decimal(250).mul(player.level.add(max_floors).pow_base(1.02).sub(player.level.sub(1).pow_base(1.02))))
+        player.level = player.level.add(max_floors.add(1))
     }
     lastTick += dt
 }, 50)
 
+let animationPos = -264 - 426
+let animationPrevTime = null
+function animateTower(time) {
+    let animDelta = Math.min(time - animationPrevTime, 100)
+    animationPrevTime = time
+
+    animationPos = animationPos + animDelta * 0.001 * getAnimationSpeed()
+    if (animationPos > -264) animationPos -= 426
+    document.getElementById("tower-image").style.transform = `translate(0px, ${animationPos}px)`
+    requestAnimationFrame(animateTower)
+}
+
+requestAnimationFrame(animateTower)
+
 if (load()) {
     console.log("game loaded")
-    if (player.area_unlocks >= 1) document.getElementById("exp-tab").style.display = "flex";
-    if (player.area_unlocks >= 2) document.getElementById("exp-upgrades-tab").style.display = "flex";
-
+    for (let i = 0; i < player.area_unlocks; i++) unlock(i)
     updateUpgradeBackdrops()
 }
 

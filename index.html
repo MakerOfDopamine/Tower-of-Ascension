@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Tower of Ascension</title>
 
-    <script src="viewport.js" defer></script>
     <script src="break_eternity.js"></script>
     <script src="format.js"></script>
     <script src="saveload.js"></script>
     <script src="tabs.js"></script>
     <script src="experience.js"></script>
+    <script src="viewport.js" defer></script>
     <script src="main.js" defer></script>
 
     <link rel="stylesheet" href="style.css">
@@ -49,8 +49,8 @@
                     The Tower
                 </div>
                 <div id="home-container" class="container newline">
-                    You are on floor <b id="home-level-display"></b>.
-                    You are <b id="home-current-height"></b> / <b id="home-needed-height"></b> m up this floor.
+                    You are on floor <b id="home-level-display">some</b>.
+                    You are <b id="home-current-height">some</b> / <b id="home-needed-height">some</b> m up this floor.
                 </div>
                 <div id="home-height-bar-container" class="bar-container">
                     <div id="home-height-bar" class="bar"></div>
@@ -59,6 +59,7 @@
                     You see an elevator...?
                 </button>
             </div>
+
             <div id="exp-tab" class="tab blue-bg primary" style="--x: 11; --y: 8; --ox: 9; --oy: 0; display: none;">
                 <div id="exp-title" class="title">
                     Experience
@@ -71,7 +72,7 @@
                     </div>
                     <hr>
                     <div id="exp-can-reset">
-                        If you go down the elevator now, you will gain <b id="exp-reset-amount"></b> EXP.
+                        If you go down the elevator now, you will gain <b id="exp-reset-amount">some</b> EXP.
                         <br><br>
                         <button id="exp-reset-button" class="button-base green-button" onclick="resetExp()">
                             I must make my way down to become more <i>experienced</i>...
@@ -82,6 +83,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="exp-upgrades-tab" class="tab green-bg major" style="--x: 20; --y: 36; --ox: 0; --oy: 9; display: none;">
                 <div id="exp-upgrades-title" class="title">
                     Experience Upgrades
@@ -96,8 +98,8 @@
                     </div>
                     <hr>
                     <div class="newline">
-                        You currently have <b id="exp-amount"></b> EXP to spend.
-                        Your unspent experience currently provides you with <b id="exp-height-multiplier"></b> faster climbing.
+                        You currently have <b id="exp-amount">some</b> EXP to spend.
+                        Your unspent experience currently provides you with <b id="exp-height-multiplier">some</b> faster climbing.
 
                     </div>
                     <div id="exp-upgrades-grid" class="item-grid" style="--cols: 4">
@@ -108,7 +110,7 @@
                             <h3>"Welcome to the town!"</h3>
                             An egg. For some mysterious reason, this egg boosts your climbing speed by 100% and your experience gain by 100%. (First and last large number boost for a long time...)<br>
                             <br>
-                            = +100% <span class="climbspeed">climbing speed</span><br>
+                            = +100% <span class="climbing">climbing speed</span><br>
                             = +100% <span class="experience">experience</span> gain<br>
                             <br>
                             <b>Cost: 1 EXP</b><br>
@@ -124,7 +126,7 @@
                             <br>
                             Climb that tower 2% faster every time you drink this potion!<br>
                             <br>
-                            = +2% <span class="climbspeed">climbing speed</span><br>
+                            = +2% <span class="climbing">climbing speed</span><br>
                             <br>
                             <b>Cost: <span id="exp-upgrade-1-data-cost"></span> EXP</b><br>
                             Bought <span id="exp-upgrade-1-data-bought"></span> times<br>
@@ -147,9 +149,49 @@
                             Currently: <span id="exp-upgrade-2-data-effect"></span>
                         </template>
 
-                        <button id="exp-upgrade-3" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(3)" data-tooltip="no-data">
-                            <img src="assets/no_img.png" draggable="false"></img>
+                        <button id="exp-upgrade-3" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(3)" data-tooltip="exp-upgrade-3-data">
+                            <img src="assets/exp_upgrade_3.png" draggable="false"></img>
                         </button>
+                        <template id="exp-upgrade-3-data" class="tooltip-template">
+                            <h3>Glitter of mild Determination</h3>
+                            <span class="flavor-text-hc">These glitter pieces seem to carry some sort of <span class="magic">magic</span> with them...</span><br>
+                            <br>
+                            You've been gaining EXP (almost) linearly with how high you climbed. This increases the exponent of the EXP gain by 0.01 per purchase, so longer climbs reward you more!<br>
+                            In general, these exponent upgrades are really strong and really expensive.<br>
+                            <br>
+                            = +0.01 <span class="climbing">climb height</span> to <span class="experience">experience</span> exponent<br>
+                            <br>
+                            <b>Cost: <span id="exp-upgrade-3-data-cost"></span> EXP</b><br>
+                            Bought <span id="exp-upgrade-3-data-bought"></span> times<br>
+                            Currently: +<span id="exp-upgrade-3-data-effect"></span>
+                        </template>
+
+                        <button class="upgrade-item show-tooltip" id="exp-upgrade-4" onclick="buyExpUpgrade(4)" data-tooltip="exp-upgrade-4-data">
+                            <img src="assets/exp_upgrade_4.png" draggable="false"></img>
+                        </button>
+                        <template id="exp-upgrade-4-data" class="tooltip-template">
+                            <h3>Windows (not the operating system)</h3>
+                            <br>
+                            Hire engineers to install windows onto the tower, so that you can have a nicer view when climbing up!<br>
+                            <br>
+                            = +0.1% <span class="climbing">climb speed</span> per <span class="climbing">floor climbed</span><br>
+                            <br>
+                            <b>Cost: 100 EXP</b><br>
+                            <span id="exp-upgrade-4-data-bought"></span><br>
+                            Currently: <span id="exp-upgrade-4-data-effect"></span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tower-animation-tab" class="tab blue-bg minor" style="--x: 6; --y: 6; --ox: -7; --oy: 0; display: none;">
+                <div id="tower-animation-title" class="title">
+                    The Window
+                </div>
+                <div style="position: relative; height: 10px;"></div> 
+                <div id="tower-animation" class="tower-animation">
+                    <div id="tower-background">
+                        <img id="tower-image" src="assets/tower2.png">
                     </div>
                 </div>
             </div>

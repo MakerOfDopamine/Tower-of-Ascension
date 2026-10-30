@@ -204,6 +204,31 @@ h3 {
     white-space: pre-line;
 }
 
+.tower-animation {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    .moving {
+        will-change: transform;
+        transform: translate(0px, 0px);
+    }
+
+    #tower-background {
+        width: 100%;
+        height: 100%;
+        background-color: skyblue;
+
+        #tower-back {
+            position: relative;
+            background-color: #505050;
+            width: 50%;
+            height: 100%;
+            left: 25%;
+        }
+    }
+}
+
 .container {
     height: fit-content;
 }
@@ -265,7 +290,6 @@ body:has(.show-tooltip:hover) .tooltip {
     background-color: rgb(192, 180, 144);
 }
 
-
 .upgrade-item:active {
     border-style: inset;
 }
@@ -297,10 +321,15 @@ body:has(.show-tooltip:hover) .tooltip {
     color: rgb(96, 96, 96);
 }
 
-.climbspeed {
+.climbing {
     color: #9bbcd3;
 }
 
 .experience {
     color: #8ce26a;
+}
+
+.magic {
+    color: #600099;
+    text-shadow: 0px 0px 6px #b000ff;
 }
