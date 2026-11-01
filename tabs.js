@@ -1,11 +1,19 @@
 function showOptions() {
     document.getElementById("options-tab").style.display = "flex";
     document.getElementById("statistics-tab").style.display = "none";
+    document.getElementById("dev-tab").style.display = "none";
 }
 
 function showStatistics() {
     document.getElementById("options-tab").style.display = "none";
     document.getElementById("statistics-tab").style.display = "flex";
+    document.getElementById("dev-tab").style.display = "none";
+}
+
+function showDevTools() {
+    document.getElementById("options-tab").style.display = "none";
+    document.getElementById("statistics-tab").style.display = "none";
+    document.getElementById("dev-tab").style.display = "flex";
 }
 
 function updateStatistics() {

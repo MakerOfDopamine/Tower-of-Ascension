@@ -9,21 +9,23 @@
     <script src="saveload.js"></script>
     <script src="tabs.js"></script>
     <script src="experience.js"></script>
+    <script src="magic.js"></script>
     <script src="viewport.js" defer></script>
     <script src="main.js" defer></script>
 
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="debug.css" disabled>
+    <link rel="stylesheet" href="debug.css">
 </head>
 <body>
     <div id="viewport" class="viewport">
         <div id="locked" style="position: absolute; z-index: 10; top: 16px; left: 16px;">
             <button class="tab-button" onclick="showOptions()">Options</button>
             <button class="tab-button" onclick="showStatistics()">Statistics</button>
+            <button class="tab-button" onclick="showDevTools()">Devtools</button>
             <br><br><br>
 
             <!-- I swear I will eventually write the actual game -->
-            <div id="options-tab" class="fixed-tab" style="display: none">
+            <div id="options-tab" class="fixed-tab" style="display: flex">
                 <div class="tape" style="--x: -10; --y: -40; --rotation: -26;"></div>
                 <div class="sticky-note-top"></div>
                 <!-- ancient technique of magic offsetting blocks -->
@@ -31,9 +33,12 @@
 
                 <button class="options-button" onclick="displayHome()">Teleport back to origin</button>
                 <button class="options-button" onclick="save()">Save the game</button>
+                <button class="options-button" onclick="export_save()">Export the game</button>
+                <hr>
                 <button class="options-button" onclick="reset_everything()">Reset the game</button>
+                
             </div>
-            <div id="statistics-tab" class="fixed-tab" style="display: flex;">
+            <div id="statistics-tab" class="fixed-tab" style="display: none;">
                 <div class="tape" style="--x: -10; --y: -35; --rotation: -35;"></div>
                 <div class="sticky-note-top"></div>
                 <div style="position: relative; height: 35px;"></div> 
@@ -42,11 +47,38 @@
                 <div id="statistics-main">Text</div>
                 <div id="statistics-unlocks">Text</div>
                 <hr>
-                <div id="statistics-win-con">For this update, you "win" with 100 k EXP. You currently have <span id="win-con-status">not enough</span>, so you have <span id="have-you-won">not won :(</span></div>
+                <div id="statistics-win-con">For this update, you "win" by unlocking magic. <!--You currently have <span id="win-con-status">not enough</span>.--><br><br> You have <span id="have-you-won">not won yet :(</span></div>
+            </div>
+            <div id="dev-tab" class="fixed-tab" style="display: none;">
+                <div class="tape" style="--x: -10; --y: -35; --rotation: -35;"></div>
+                <div class="sticky-note-top"></div>
+                <div style="position: relative; height: 35px;"></div> 
+
+                <div>Here are tools useful for reviewers to not have to play through the entire game.</div>
+                <div>Your DEVSPEED multiplies every tick's length. (If you set an invalid number, you WILL brick the game!)</div>
+                <div style="position: relative; height: 15px;"></div> 
+                <input id="dev-devspeed-input" type="number">
+                <button class="options-button" onclick="DEVSPEED = Number(document.getElementById('dev-devspeed-input').value)">Set your DEVSPEED</button>
+                <div>Skip an amount of time in seconds.</div>
+                <div style="position: relative; height: 15px;"></div> 
+                <input id="dev-skiptime-input" type="number">
+                <button class="options-button" onclick="_skip_seconds(Number(document.getElementById('dev-skiptime-input').value))">Skip time</button>
             </div>
         </div>
         <div id="world" class="world">
-            <div id="home-tab" class="tab blue-bg primary" style="--x: 8; --y: 8; --ox: 0; --oy: 0">
+            <div id="tower-animation-tab" class="tab blue-bg minor" style="--x: 6; --y: 6; --ox: -7; --oy: 0; display: none;">
+                <div id="tower-animation-title" class="title">
+                    The Window
+                </div>
+                <div style="position: relative; height: 10px;"></div> 
+                <div id="tower-animation" class="tower-animation">
+                    <div id="tower-background">
+                        <img id="tower-image" src="assets/tower2.png" draggable="false">
+                    </div>
+                </div>
+            </div>
+
+            <div id="home-tab" class="tab blue-bg primary" style="--x: 8; --y: 10; --ox: 0; --oy: 0">
                 <div id="home-title" class="title">
                     The Tower
                 </div>
@@ -60,9 +92,14 @@
                 <button id="unlock-0-button" class="button-base" onclick="unlock(0)">
                     You see an elevator...?
                 </button>
+                <div id="home-tiredness" style="display: none;">
+                    <hr><br>
+                    Huff... huff... it's really tiring climbing the staircase.<br>
+                    Your legs are sore, so your climbing speed is reduced <b id="home-tiredness-display"></b>!
+                </div>
             </div>
 
-            <div id="exp-tab" class="tab blue-bg primary" style="--x: 11; --y: 8; --ox: 9; --oy: 0; display: none;">
+            <div id="exp-tab" class="tab blue-bg primary" style="--x: 11; --y: 10; --ox: 9; --oy: 0; display: none;">
                 <div id="exp-title" class="title">
                     Experience
                 </div>
@@ -86,7 +123,7 @@
                 </div>
             </div>
 
-            <div id="exp-upgrades-tab" class="tab green-bg major" style="--x: 20; --y: 36; --ox: 0; --oy: 9; display: none;">
+            <div id="exp-upgrades-tab" class="tab green-bg major" style="--x: 20; --y: 36; --ox: 0; --oy: 11; display: none;">
                 <div id="exp-upgrades-title" class="title">
                     Experience Upgrades
                 </div>
@@ -106,7 +143,7 @@
                     </div>
                     <div id="exp-upgrades-grid" class="item-grid" style="--cols: 4">
                         <button id="exp-upgrade-0" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(0)" data-tooltip="exp-upgrade-0-data">
-                            <img src="assets/exp_upgrade_0.png" draggable="false"></img>
+                            <img src="assets/exp_upgrade_0.png" draggable="false">
                         </button>
                         <template id="exp-upgrade-0-data" class="tooltip-template">
                             <h3>"Welcome to the town!"</h3>
@@ -120,15 +157,15 @@
                         </template>
 
                         <button id="exp-upgrade-1" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(1)" data-tooltip="exp-upgrade-1-data">
-                            <img src="assets/exp_upgrade_1.png" draggable="false"></img>
+                            <img src="assets/exp_upgrade_1.png" draggable="false">
                         </button>
                         <template id="exp-upgrade-1-data" class="tooltip-template">
                             <h3>Potion of Speed</h3>
                             <span class="flavor-text-hc">Are we really already getting to the generic items?</span><br>
                             <br>
-                            Climb that tower 2% faster every time you drink this potion!<br>
+                            Climb that tower 5% faster every time you drink this potion!<br>
                             <br>
-                            = +2% <span class="climbing">climbing speed</span><br>
+                            = +5% <span class="climbing">climbing speed</span><br>
                             <br>
                             <b>Cost: <span id="exp-upgrade-1-data-cost"></span> EXP</b><br>
                             Bought <span id="exp-upgrade-1-data-bought"></span> times<br>
@@ -136,15 +173,15 @@
                         </template>
 
                         <button id="exp-upgrade-2" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(2)" data-tooltip="exp-upgrade-2-data">
-                            <img src="assets/exp_upgrade_2.png" draggable="false"></img>
+                            <img src="assets/exp_upgrade_2.png" draggable="false">
                         </button>
                         <template id="exp-upgrade-2-data" class="tooltip-template">
                             <h3>Potion of Knowledge</h3>
                             <span class="flavor-text-hc">Okay, fine.</span><br>
                             <br>
-                            Learn more from repeatedly climbing up a spiral staircase 2% faster every time you drink this potion!<br>
+                            Learn 5% more from repeatedly climbing up a spiral staircase every time you drink this potion!<br>
                             <br>
-                            = +2% <span class="experience">experience</span> gain<br>
+                            = +5% <span class="experience">experience</span> gain<br>
                             <br>
                             <b>Cost: <span id="exp-upgrade-2-data-cost"></span> EXP</b><br>
                             Bought <span id="exp-upgrade-2-data-bought"></span> times<br>
@@ -152,16 +189,16 @@
                         </template>
 
                         <button id="exp-upgrade-3" class="upgrade-item show-tooltip" onclick="buyExpUpgrade(3)" data-tooltip="exp-upgrade-3-data">
-                            <img src="assets/exp_upgrade_3.png" draggable="false"></img>
+                            <img src="assets/exp_upgrade_3.png" draggable="false">
                         </button>
                         <template id="exp-upgrade-3-data" class="tooltip-template">
                             <h3>Glitter of mild Determination</h3>
                             <span class="flavor-text-hc">These glitter pieces seem to carry some sort of <span class="magic">magic</span> with them...</span><br>
                             <br>
-                            You've been gaining EXP (almost) linearly with how high you climbed. This increases the exponent of the EXP gain by 0.01 per purchase, so longer climbs reward you more!<br>
+                            You've been gaining EXP (almost) linearly with how high you climbed. This increases the exponent of the EXP gain by 0.02 per purchase, so longer climbs reward you more!<br>
                             In general, these exponent upgrades are really strong and really expensive.<br>
                             <br>
-                            = +0.01 <span class="climbing">climb height</span> to <span class="experience">experience</span> exponent<br>
+                            = +0.02 <span class="climbing">climb height</span> to <span class="experience">experience</span> exponent<br>
                             <br>
                             <b>Cost: <span id="exp-upgrade-3-data-cost"></span> EXP</b><br>
                             Bought <span id="exp-upgrade-3-data-bought"></span> times<br>
@@ -169,31 +206,81 @@
                         </template>
 
                         <button class="upgrade-item show-tooltip" id="exp-upgrade-4" onclick="buyExpUpgrade(4)" data-tooltip="exp-upgrade-4-data">
-                            <img src="assets/exp_upgrade_4.png" draggable="false"></img>
+                            <img src="assets/exp_upgrade_4.png" draggable="false">
                         </button>
                         <template id="exp-upgrade-4-data" class="tooltip-template">
                             <h3>Windows (not the operating system)</h3>
                             <br>
                             Hire engineers to install windows onto the tower, so that you can have a nicer view when climbing up!<br>
                             <br>
-                            = +0.1% <span class="climbing">climb speed</span> per <span class="climbing">floor climbed</span><br>
+                            = +0.1% <span class="climbing">climbing speed</span> per <span class="climbing">floor climbed</span><br>
                             <br>
                             <b>Cost: 100 EXP</b><br>
                             <span id="exp-upgrade-4-data-bought"></span><br>
                             Currently: <span id="exp-upgrade-4-data-effect"></span>
                         </template>
+
+                        <button class="upgrade-item show-tooltip" id="exp-upgrade-5" onclick="buyExpUpgrade(5)" data-tooltip="exp-upgrade-5-data">
+                            <img src="assets/exp_upgrade_5.png" draggable="false">
+                        </button>
+                        <template id="exp-upgrade-5-data" class="tooltip-template">
+                            <h3>An apple</h3>
+                            <span class="flavor-text-hc">...a day keeps the doctor away.</span><br>
+                            <br>
+                            You may have noticed that when you climb too high, your legs get tired. Here's an apple to help!<br>
+                            <br>
+                            = -3% <span class="exhaustion">exhaustion</span> factor<br>
+                            <br>
+                            <b>Cost: <span id="exp-upgrade-5-data-cost"></span> EXP</b><br>
+                            Bought <span id="exp-upgrade-5-data-bought"></span> times<br>
+                            Currently: <span id="exp-upgrade-5-data-effect"></span>
+                        </template>
+
+                        <button class="upgrade-item show-tooltip" id="exp-upgrade-6" onclick="buyExpUpgrade(6)" data-tooltip="exp-upgrade-6-data">
+                            <img src="assets/exp_upgrade_6.png" draggable="false">
+                        </button>
+                        <template id="exp-upgrade-6-data" class="tooltip-template">
+                            <h3>Tome of Lesser Knowledge</h3>
+                            <span class="flavor-text-hc">Sounds like a TEEMIU(tm) listing.</span><br>
+                            <br>
+                            This tome lets your experience turn into climbing faster.<br>
+                            More specifically, this upgrade reduces the base of the logarithm in the experience to speed formula by 0.2 per upgrade.<br>
+                            <br>
+                            = -0.2 <span class="experience">experience</span> to <span class="climbing">climbing speed</span> logarithm base.<br>
+                            <br>
+                            <b>Cost: <span id="exp-upgrade-6-data-cost"></span> EXP</b><br>
+                            Bought <span id="exp-upgrade-6-data-bought"></span> times<br>
+                            Currently: <span id="exp-upgrade-6-data-effect"></span>
+                        </template>
+
+                        <button class="upgrade-item show-tooltip" id="exp-upgrade-7" onclick="buyExpUpgrade(7)" data-tooltip="exp-upgrade-7-data">
+                            <img src="assets/magic.png" draggable="false">
+                        </button>
+                        <template id="exp-upgrade-7-data" class="tooltip-template">
+                            <h3>An orb...?</h3>
+                            <br>
+                            What could this be for?<br>
+                            <br>
+                            = <span class="magic">???</span><br>
+                            <br>
+                            <b>Cost: 100 k EXP</b>
+                        </template>
                     </div>
                 </div>
             </div>
 
-            <div id="tower-animation-tab" class="tab blue-bg minor" style="--x: 6; --y: 6; --ox: -7; --oy: 0; display: none;">
-                <div id="tower-animation-title" class="title">
-                    The Window
+            <div id="magic-tab" class="tab purple-bg primary" style="--x: 16; --y: 16; --ox: 21; --oy: 0; display: none;">
+                <div id="magic-title" class="title-alt">
+                    A Kind of Magic
                 </div>
-                <div style="position: relative; height: 10px;"></div> 
-                <div id="tower-animation" class="tower-animation">
-                    <div id="tower-background">
-                        <img id="tower-image" src="assets/tower2.png">
+                <div id="magic-container" class="container">
+                    <div id="magic-reset-container">
+                        <img src="assets/magic.png" draggable="false" style="width: 512px; height: 512px; margin-top: -128px; image-rendering: crisp-edges;" onclick="if (!player.won) {alert(`Congratulations! You have won ${player.version} of the Tower of Ascension! For now...`); player.won = true;}">
+                        <div class="magic" style="font-size: 28px; margin-left: 25%; margin-top: -128px;">Ponder thy orb...</div>
+                    </div>
+                    <br><br>
+                    <div id="magic-before-unlock">
+                        You come across a mysterious, glowing purple orb. You can't help but get the urge to touch it.
                     </div>
                 </div>
             </div>

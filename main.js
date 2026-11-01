@@ -1,12 +1,16 @@
 const default_player = {
-    version: "indev_3",
+    version: "indev_4",
     lastTick: Date.now(),
     won: false,
     height: new Decimal(0),
     level: new Decimal(1),
     exp: {
         value: new Decimal(0),
-        upgrades: [false, 0, 0, 0, false]
+        total: new Decimal(0),
+        upgrades: [false, 0, 0, 0, false, 0, 0, false]
+    },
+    magic: {
+        value: new Decimal(0)
     },
     saveStart: Date.now(),
     unlocks: 0,
@@ -17,7 +21,7 @@ let player = default_player
 
 const STATIC = {
     exp: {
-        upg_max: [0, 100, 100, 8, 0]
+        upg_max: [0, 100, 100, 8, 0, 10, 30, 0]
     }
 }
 
@@ -33,6 +37,21 @@ function setWidth(id, width = 0) {
 
 function setVisibility(obj, visible, default_visibility = "block") {
     document.getElementById(obj).style.display = (visible ? default_visibility : "none")
+}
+
+function getFloorHeight(F) {
+    // Height of floor F
+    F = new Decimal(F)
+    return new Decimal(5).mul(F.pow_base(1.02))
+}
+
+function getTiredness(F) {
+    let exhaustion = new Decimal(0.0025)
+    let tiredness_start = new Decimal(100)
+
+    exhaustion = exhaustion.mul(getExperienceUpgradeEffect(5))
+
+    return new Decimal(1).sub(exhaustion).pow(F.sub(tiredness_start))
 }
 
 function getPlayerSpeed() {
@@ -54,13 +73,8 @@ function getPlayerSpeed() {
 
     // Final speed
 
+    base = base.mul(getTiredness(player.level))
     return base
-}
-
-function getFloorHeight(F) {
-    // Height of floor F
-    F = new Decimal(F)
-    return new Decimal(5).mul(F.pow_base(1.02))
 }
 
 function getAnimationSpeed() {
@@ -77,13 +91,13 @@ function _skip_seconds(x) {
 
 const UNLOCKED_EVERYTHING = "You've unlocked everything... for now."
 function checkForUnlocks() {
+    setVisibility("unlock-0-button", false)
     switch (player.unlocks) {
         case 0:
             if (player.level.gte(10)) {
                 player.unlocks = 1
             } else {
                 setText("statistics-unlocks", "You might unlock something new on floor 10...")
-                setVisibility("unlock-0-button", false)
             }
             break
         case 1:
@@ -92,11 +106,12 @@ function checkForUnlocks() {
             break
         case 2:
             setText("statistics-unlocks", "You might unlock something by improving something architectural...")
-            setVisibility("unlock-0-button", false)
             break
         case 3:
+            setText("statistics-unlocks", "You might unlock something by pondering a purple object...")
+            break
+        case 4:
             setText("statistics-unlocks", UNLOCKED_EVERYTHING)
-            setVisibility("unlock-0-button", false)
             break
     }
 }
@@ -111,6 +126,9 @@ function unlock(x) {
             break
         case 2:
             document.getElementById("tower-animation-tab").style.display = "flex";
+            break
+        case 3:
+            document.getElementById("magic-tab").style.display = "flex";
             break
     }
     player.area_unlocks = player.unlocks
@@ -132,7 +150,7 @@ function updateTooltipData() {
             _set(`exp-upgrade-${i}-data-bought`, player.exp.upgrades[i] ? "Bought!" : "Not bought")
         } else {
             _set(`exp-upgrade-${i}-data-cost`, format(getExpUpgradeCost(i), false, true))
-            _set(`exp-upgrade-${i}-data-bought`, `${player.exp.upgrades[i]} / ${STATIC.exp.upg_max[1]}`)
+            _set(`exp-upgrade-${i}-data-bought`, `${player.exp.upgrades[i]} / ${STATIC.exp.upg_max[i]}`)
         }
     }
     
@@ -140,6 +158,8 @@ function updateTooltipData() {
     _set("exp-upgrade-2-data-effect", `${formatEffect(getExperienceUpgradeEffect(2).sub(1))}`)
     _set("exp-upgrade-3-data-effect", `${getExperienceUpgradeEffect(3).toFixed(2)}`)
     _set("exp-upgrade-4-data-effect", `${formatEffect(getExperienceUpgradeEffect(4).sub(1))}`)
+    _set("exp-upgrade-5-data-effect", `${formatEffect(getExperienceUpgradeEffect(5).sub(1))}`)
+    _set("exp-upgrade-6-data-effect", `log10 -> log${(10 - getExperienceUpgradeEffect(6)).toFixed(2)}`)
 }
 
 function updateUpgradeBackdrops() {
@@ -158,7 +178,7 @@ function updateUpgradeBackdrops() {
     }
 }
 
-const DEVSPEED = 1
+let DEVSPEED = 1
 const gameLoop = setInterval(() => {
     player.lastTick = lastTick
     let dt = Date.now() - lastTick
@@ -187,17 +207,25 @@ const gameLoop = setInterval(() => {
         setText("exp-height-multiplier", formatEffect(exp_mul.sub(1)))
     }
 
+    if (player.level.gte(100)) {
+        setVisibility("home-tiredness", true)
+        let tiredness = getTiredness(player.level)
+        setText("home-tiredness-display", `${tiredness.gte(0.001) ? `by ${formatEffect(tiredness.sub(1).neg()).slice(1)}` : `to ${format(tiredness, true)} of original!`}`)
+    } else {
+        setVisibility("home-tiredness", false)
+    }
+
     updateStatistics()
     checkForUnlocks()
     updateTooltipData()
 
     // REMEMBER TO CHANGE THIS EVERY UPDATE!!!!
-    setText("win-con-status", format(player.exp.value))
-    setText("have-you-won", player.won ? "won! :D" : "not won :(")
-    if (!player.won && player.exp.value.gte(1e5)) {
-        player.won = true
-        alert(`Congratulations! You have won ${player.version} of the Tower of Ascension! For now...`)
-    }
+    // setText("win-con-status", format(player.exp.value))
+    setText("have-you-won", player.won ? "won! :D" : "not won yet :(")
+    //if (!player.won && player.exp.value.gte(1e5)) {
+    //    player.won = true
+    //    alert(`Congratulations! You have won ${player.version} of the Tower of Ascension! For now...`)
+    //}
 
     //bars["home-height-bar"].style.width = `${player.height.div(height_floor).mul(100).toNumber()}%`
     setWidth("home-height-bar", player.height.div(height_floor).mul(100).toNumber())

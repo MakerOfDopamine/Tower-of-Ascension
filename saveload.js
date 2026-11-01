@@ -82,6 +82,25 @@ function validate_save() {
                 player.lastTick = Date.now()
                 console.log("Updated save from indev_2 => indev_3")
                 player.version = "indev_3"
+            case "indev_3":
+                player.magic = default_player.magic
+                console.log("Updated save from indev_3 => indev_4")
+                player.version = "indev_4"
         }
     }
+}
+
+function export_save() {
+    let save_data = btoa(JSON.stringify(player))
+    // what the fvvk is a blob
+    let save_data_blobbed = new Blob([save_data])
+    const export_el = document.createElement("a")
+    const export_url = URL.createObjectURL(save_data_blobbed)
+    const export_date = new Date()
+
+    export_el.href = export_url
+    export_el.download = `ToA_save_${export_date.toISOString().slice(0, 10)}_${export_date.toLocaleTimeString()}.txt`
+    export_el.click()
+
+    URL.revokeObjectURL(export_url)
 }

@@ -14,6 +14,9 @@ h3 {
 
 .viewport {
     background-image: url("back.png");
+    position: fixed;
+    inset: 0;
+    overflow: clip;
     height: inherit;
     width: inherit;
     box-sizing: border-box;
@@ -156,6 +159,17 @@ h3 {
     display: inline;
 }
 
+.title-alt {
+    position: relative;
+    width: calc(100% - 8px);
+    padding: 4px;
+    height: 16px;
+    background-color: #554499;
+    border: 1px solid #2a2255;
+    color: #ddd;
+    display: inline;
+}
+
 .tab {
     position: absolute;
     width: calc(var(--x) * 32px);
@@ -247,6 +261,14 @@ h3 {
     background: rgb(188, 211, 155);
 }
 
+.purple-bg {
+    background: rgb(177, 155, 222)
+}
+
+.red-bg {
+    background: rgb(211, 155, 188);
+}
+
 .button-base {
     height: auto;
     font: inherit;
@@ -329,7 +351,16 @@ body:has(.show-tooltip:hover) .tooltip {
     color: #8ce26a;
 }
 
+.exhaustion {
+    color: #c06000;
+    text-shadow: 1px 0 0 #804000, 0 1px 0 #804000, -1px 0 0 #804000, 0 -1px 0 #804000;
+}
+
 .magic {
     color: #600099;
     text-shadow: 0px 0px 6px #b000ff;
+}
+
+.damage {
+    color: #ff3f00;
 }
