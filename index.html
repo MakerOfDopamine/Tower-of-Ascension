@@ -46,8 +46,9 @@
 
                 <div id="statistics-main">Text</div>
                 <div id="statistics-unlocks">Text</div>
+                If your game is stuck like this, please reset your save!
                 <hr>
-                <div id="statistics-win-con">For this update, you "win" by unlocking magic. <!--You currently have <span id="win-con-status">not enough</span>.--><br><br> You have <span id="have-you-won">not won yet :(</span></div>
+                <div id="statistics-win-con">For this update, you "win" by getting 100 magic. You currently have <span id="win-con-status">not enough</span>.<br><br> You have <span id="have-you-won">not won yet :(</span></div>
             </div>
             <div id="dev-tab" class="fixed-tab" style="display: none;">
                 <div class="tape" style="--x: -10; --y: -35; --rotation: -35;"></div>
@@ -66,16 +67,18 @@
             </div>
         </div>
         <div id="world" class="world">
-            <div id="tower-animation-tab" class="tab blue-bg minor" style="--x: 6; --y: 6; --ox: -7; --oy: 0; display: none;">
+            <div id="tower-animation-tab" class="tab blue-bg minor" style="--x: 6; --y: 7; --ox: -7; --oy: 0; display: none;">
                 <div id="tower-animation-title" class="title">
                     The Window
                 </div>
                 <div style="position: relative; height: 10px;"></div> 
-                <div id="tower-animation" class="tower-animation">
+                <div id="tower-animation" class="tower-animation" style="height: 142px;">
                     <div id="tower-background">
                         <img id="tower-image" src="assets/tower2.png" draggable="false">
                     </div>
                 </div>
+                <br>
+                <div class="small-text">You are currently climbing <b id="home-height-persec">some</b> m/s.</div>
             </div>
 
             <div id="home-tab" class="tab blue-bg primary" style="--x: 8; --y: 10; --ox: 0; --oy: 0">
@@ -95,7 +98,7 @@
                 <div id="home-tiredness" style="display: none;">
                     <hr><br>
                     Huff... huff... it's really tiring climbing the staircase.<br>
-                    Your legs are sore, so your climbing speed is reduced <b id="home-tiredness-display"></b>!
+                    Your legs are sore, so your climbing speed is reduced <b id="home-tiredness-display">some</b>!
                 </div>
             </div>
 
@@ -261,7 +264,7 @@
                             <br>
                             What could this be for?<br>
                             <br>
-                            = <span class="magic">???</span><br>
+                            <span id="exp-upgrade-7-effect">= <span class="magic">???</span></span><br>
                             <br>
                             <b>Cost: 100 k EXP</b>
                         </template>
@@ -269,19 +272,106 @@
                 </div>
             </div>
 
-            <div id="magic-tab" class="tab purple-bg primary" style="--x: 16; --y: 16; --ox: 21; --oy: 0; display: none;">
+            <div id="magic-tab" class="tab purple-bg primary" style="--x: 16; --y: 14; --ox: 21; --oy: 0; display: none;">
                 <div id="magic-title" class="title-alt">
                     A Kind of Magic
                 </div>
                 <div id="magic-container" class="container">
                     <div id="magic-reset-container">
-                        <img src="assets/magic.png" draggable="false" style="width: 512px; height: 512px; margin-top: -128px; image-rendering: crisp-edges;" onclick="if (!player.won) {alert(`Congratulations! You have won ${player.version} of the Tower of Ascension! For now...`); player.won = true;}">
-                        <div class="magic" style="font-size: 28px; margin-left: 25%; margin-top: -128px;">Ponder thy orb...</div>
+                        <img src="assets/magic.png" class="show-tooltip" data-tooltip="magic-reset-data" draggable="false" style="width: 512px; height: 512px; margin-top: -128px; image-rendering: crisp-edges;" onclick="resetMagic()">
+                        <div class="magic outlined" style="font-size: 28px; margin-left: 25%; margin-top: -128px;">Ponder thy orb...</div>
+                        <template id="magic-reset-data">
+                            <span class="flavor-text-hc">Gaze deep into the depths of the orb...<br><br>... and sense harmony within yourself.<br></span><br>
+                            The experience you had of climbing the tower over and over again will grant you <span id="magic-reset-amount"></span> <span class="magic">magic</span> and <span id="magic-prayer-amount"></span> <span class="prayers">prayers</span>.
+                        </template>
                     </div>
                     <br><br>
                     <div id="magic-before-unlock">
                         You come across a mysterious, glowing purple orb. You can't help but get the urge to touch it.
                     </div>
+                    <div id="magic-display">
+                        You have <b id="magic-amount">some</b> <span class="magic">magic</span> and <b id="prayers-amount">some</b> unspent <span class="prayers outlined">prayers</span>.
+                    </div>
+                </div>
+            </div>
+
+            <div id="magic-producer-tab" class="tab purple-bg minor" style="--x: 16; --y: 16; --ox: 21; --oy: 15; display: none;">
+                <div id="magic-producer-title" class="title-alt">
+                    BEAST&reg; Energy
+                </div>
+                <div id="magic-producer-container" class="container newline">
+                    <span class="flavor-text">What?</span>
+
+                    You have <b id="magic-producer-beast-amount">some</b> <span class="beast-energy">BEAST&reg; Energy</span>.
+                    You are producing <b id="magic-producer-beast-persec">some</b> <span class="beast-energy">BEAST&reg; Energy</span> per second.
+
+                    Chugging your <span class="beast-energy">BEAST&reg; Energy</span> increases your final speed by <b id="magic-producer-beast-effect">some</b>.
+                    <div id="magic-producer-list">
+                        <div id="beast-producer-1" style="display: flex; flex-direction: horizontal; vertical-align: middle; align-items: center;">
+                            <img src="assets/beast-energy-can.png" draggable="false" style="margin-left: -8px;">
+
+                            <!-- css's newline has this stupid property that the first line is considered a newline even if it's an indent -->
+                            <div class="small-text" style="min-width: 0;">Buy a can of legally distinct
+                                <span class="beast-energy">BEAST&reg; Energy</span>!
+                                Produces 2 <span class="beast-energy">BEAST&reg; Energy</span> per second.
+                                You have <b id="beast-producer-1-owned">some</b>.
+                            </div>
+                            <button id="magic-producer-beast-1-button" class="button-base beast-energy-button small-text" style="margin-left: auto; height: fit-content;" onclick="buyBeastProducer(0)">Buy me!
+                                Cost: <span id="magic-producer-beast-1-cost">some</span> <span class="magic">magic</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="shrine-tab" class="tab orange-bg major" style="--x: 18; --y: 20; --ox: 38; --oy: 0; display: none;">
+                <div id="shrine-title" class="title">Shrines and Prayers</div>
+                <br>
+                <div id="shrine-container" class="container item-grid" style="--cols: 2;">
+                    <div class="shrine-god-container show-tooltip" style="display: flex; align-items: center; justify-content: center;" data-tooltip="shrine-hermes-tooltip">
+                        <img src="assets/no_img.png" style="scale: 2.0; image-rendering: crisp-edges;" draggable="false" onclick="prayToShrine(0)">
+                    </div>
+                    <template id="shrine-hermes-tooltip" class="tooltip-template">
+                        <h2 class="hermes">Hermes</h2>
+                        <span class="prayers">Pray</span> to <span class="hermes">Hermes</span>, gaining His speedy favor.<br><br>
+
+                        You have <span class="prayers">prayed</span> to <span class="hermes">Hermes</span> <b id="shrine-hermes-count"></b> time(s).<br>
+                        His favor grants you ^<span id="shrine-hermes-bonus">some</span> <span class="climbing">climb speed</span>.
+                    </template>
+
+                    <div class="shrine-god-container show-tooltip" style="display: flex; align-items: center; justify-content: center;" data-tooltip="shrine-bunya-tooltip">
+                        <img src="assets/no_img.png" style="scale: 2.0; image-rendering: crisp-edges;" draggable="false" onclick="prayToShrine(1)">
+                    </div>
+                    <template id="shrine-bunya-tooltip" class="tooltip-template">
+                        <h2 class="bunya">Bunya</h2>
+                        <span class="prayers">Pray</span> to <span class="bunya">Bunya</span>, gaining Her bouncy favor.<br><br>
+
+                        You have <span class="prayers">prayed</span> to <span class="bunya">Bunya</span> <b id="shrine-bunya-count"></b> time(s).<br>
+                        Her favor grants you <span id="shrine-bunya-bonus">some</span> effective <span class="climbing">floor</span> count for <span class="experience">EXP</span>.
+                    </template>
+
+                    <div class="shrine-god-container show-tooltip" style="display: flex; align-items: center; justify-content: center;" data-tooltip="shrine-beez-tooltip">
+                        <img src="assets/no_img.png" style="scale: 2.0; image-rendering: crisp-edges;" draggable="false" onclick="prayToShrine(2)">
+                    </div>
+                    <template id="shrine-beez-tooltip" class="tooltip-template">
+                        <h2 class="beez">Beezlebub</h2>
+                        <div class="flavor-text-hc">A gdo of dylsexic ebes.</div><br>
+                        <span class="prayers">Pray</span> to <span class="beez">Beezlebub</span>, gaining Her fuzzy favor.<br><br>
+
+                        You have <span class="prayers">prayed</span> to <span class="beez">Beezlebub</span> <b id="shrine-beez-count"></b> time(s).<br>
+                        Her favor grants you <span id="shrine-beez-prod-bonus">some</span> faster <span class="beast-energy">BEAST&reg; Energy</span> production.<br>
+                    </template>
+
+                    <div class="shrine-god-container show-tooltip" style="display: flex; align-items: center; justify-content: center;" data-tooltip="shrine-expedia-tooltip">
+                        <img src="assets/no_img.png" style="scale: 2.0; image-rendering: crisp-edges;" draggable="false" onclick="prayToShrine(3)">
+                    </div>
+                    <template id="shrine-expedia-tooltip" class="tooltip-template">
+                        <h2 class="experience">Expedia</h2>
+                        <span class="prayers">Pray</span> to <span class="experience">Expedia</span>, gaining His wise favor.<br><br>
+
+                        You have <span class="prayers">prayed</span> to <span class="experience">Expedia</span> <b id="shrine-expedia-count"></b> time(s).<br>
+                        His favor grants you <span id="shrine-expedia-bonus"></span> <span class="experience">EXP</span> gain from resets.
+                    </template>
                 </div>
             </div>
         </div>

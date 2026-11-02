@@ -1,5 +1,5 @@
 const default_player = {
-    version: "indev_4",
+    version: "indev_5",
     lastTick: Date.now(),
     won: false,
     height: new Decimal(0),
@@ -10,7 +10,17 @@ const default_player = {
         upgrades: [false, 0, 0, 0, false, 0, 0, false]
     },
     magic: {
-        value: new Decimal(0)
+        value: new Decimal(0),
+        total: new Decimal(0),
+        prayers: {
+            value: new Decimal(0),
+            total: new Decimal(0),
+            spent: [new Decimal(0), new Decimal(0), new Decimal(0), new Decimal(0)]
+        },
+        beast: {
+            producers: [0],
+            power: new Decimal(0)
+        }
     },
     saveStart: Date.now(),
     unlocks: 0,
@@ -51,7 +61,7 @@ function getTiredness(F) {
 
     exhaustion = exhaustion.mul(getExperienceUpgradeEffect(5))
 
-    return new Decimal(1).sub(exhaustion).pow(F.sub(tiredness_start))
+    return new Decimal(1).sub(exhaustion).pow(F.sub(tiredness_start).max(0))
 }
 
 function getPlayerSpeed() {
@@ -70,10 +80,14 @@ function getPlayerSpeed() {
     // Flat speed
 
     // Powers
+    base = base.pow(getShrineFavor(0))
 
     // Final speed
+    base = base.add(getBeastHeightBoost())
 
+    // Debuffs
     base = base.mul(getTiredness(player.level))
+
     return base
 }
 
@@ -92,6 +106,8 @@ function _skip_seconds(x) {
 const UNLOCKED_EVERYTHING = "You've unlocked everything... for now."
 function checkForUnlocks() {
     setVisibility("unlock-0-button", false)
+    setVisibility("magic-before-unlock", false)
+    setVisibility("magic-display", false)
     switch (player.unlocks) {
         case 0:
             if (player.level.gte(10)) {
@@ -112,6 +128,7 @@ function checkForUnlocks() {
             break
         case 4:
             setText("statistics-unlocks", UNLOCKED_EVERYTHING)
+            setVisibility("magic-before-unlock", true)
             break
     }
 }
@@ -129,6 +146,11 @@ function unlock(x) {
             break
         case 3:
             document.getElementById("magic-tab").style.display = "flex";
+            break
+        case 4:
+            setVisibility("magic-display", true)
+            document.getElementById("magic-producer-tab").style.display = "flex";
+            document.getElementById("shrine-tab").style.display = "flex";
             break
     }
     player.area_unlocks = player.unlocks
@@ -160,6 +182,19 @@ function updateTooltipData() {
     _set("exp-upgrade-4-data-effect", `${formatEffect(getExperienceUpgradeEffect(4).sub(1))}`)
     _set("exp-upgrade-5-data-effect", `${formatEffect(getExperienceUpgradeEffect(5).sub(1))}`)
     _set("exp-upgrade-6-data-effect", `log10 -> log${(10 - getExperienceUpgradeEffect(6)).toFixed(2)}`)
+
+    _set("magic-reset-amount", `${format(getMagicResetAmount(), false, true)}`)
+    _set("magic-prayer-amount", `${format(new Decimal(1), false, true)}`)
+
+    _set("shrine-hermes-bonus", `${format(getShrineFavor(0))}`) 
+    _set("shrine-bunya-bonus", `${formatEffect(getShrineFavor(1).sub(1))}`) 
+    _set("shrine-beez-prod-bonus", `${formatEffect(getShrineFavor(2).sub(1))}`) 
+    _set("shrine-expedia-bonus", `${formatEffect(getShrineFavor(3).sub(1))}`)
+
+    _set("shrine-hermes-count", `${format(player.magic.prayers.spent[0], false, true)}`)
+    _set("shrine-bunya-count", `${format(player.magic.prayers.spent[1], false, true)}`)
+    _set("shrine-beez-count", `${format(player.magic.prayers.spent[2], false, true)}`)
+    _set("shrine-expedia-count", `${format(player.magic.prayers.spent[3], false, true)}`)
 }
 
 function updateUpgradeBackdrops() {
@@ -183,8 +218,14 @@ const gameLoop = setInterval(() => {
     player.lastTick = lastTick
     let dt = Date.now() - lastTick
     let speed = getPlayerSpeed()
+    let bp_per_sec = getBeastPerSecond()
     let height_floor = getFloorHeight(player.level.sub(1))
+
     player.height = player.height.add(speed.mul(dt).div(1000).mul(DEVSPEED))
+    player.magic.beast.power = player.magic.beast.power.add(bp_per_sec.mul(dt).div(1000).mul(DEVSPEED))
+
+    setText("home-height-persec", `${format(speed)}`)
+    setText("magic-producer-beast-persec", `${format(bp_per_sec)}`)
 
     setText("home-level-display", format(player.level, false, true))
     setText("home-current-height", format(player.height))
@@ -215,17 +256,34 @@ const gameLoop = setInterval(() => {
         setVisibility("home-tiredness", false)
     }
 
+    if (player.unlocks > 4) {
+        setText("magic-amount", `${format(player.magic.value)}`)
+        setText("prayers-amount", `${format(player.magic.prayers.value, false, true)}`)
+
+        setText("magic-producer-beast-amount", `${format(player.magic.beast.power)}`)
+        setText("magic-producer-beast-effect", `+${format(getBeastHeightBoost())}`)
+
+        let cost = getBeastProducerCost(0)
+        setText("magic-producer-beast-1-cost", `${format(getBeastProducerCost(0), false, true)}`)
+        setText("beast-producer-1-owned", `${format(player.magic.beast.producers[0], false, true)}`)
+        if (player.magic.value.lt(cost)) {
+            document.getElementById("magic-producer-beast-1-button").classList.add("unaffordable")
+        } else {
+            document.getElementById("magic-producer-beast-1-button").classList.remove("unaffordable")
+        }
+    }
+
     updateStatistics()
     checkForUnlocks()
     updateTooltipData()
 
     // REMEMBER TO CHANGE THIS EVERY UPDATE!!!!
-    // setText("win-con-status", format(player.exp.value))
+    setText("win-con-status", format(player.magic.value))
     setText("have-you-won", player.won ? "won! :D" : "not won yet :(")
-    //if (!player.won && player.exp.value.gte(1e5)) {
-    //    player.won = true
-    //    alert(`Congratulations! You have won ${player.version} of the Tower of Ascension! For now...`)
-    //}
+    if (!player.won && player.magic.value.gte(100)) {
+        player.won = true
+        alert(`Congratulations! You have won ${player.version} of the Tower of Ascension! For now...`)
+    }
 
     //bars["home-height-bar"].style.width = `${player.height.div(height_floor).mul(100).toNumber()}%`
     setWidth("home-height-bar", player.height.div(height_floor).mul(100).toNumber())

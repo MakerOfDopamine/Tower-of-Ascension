@@ -192,11 +192,11 @@ h3 {
     grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
     padding: 0px 8px;
     gap: 18px;
+}
 
-    a {
-        min-width: 0;
-        min-height: 0;
-    }
+.shrine-god-container {
+    width: 100%;
+    aspect-ratio: 1;
 }
 
 .tooltip {
@@ -243,6 +243,13 @@ h3 {
     }
 }
 
+.outlined {
+    text-shadow: 1px 0 color-mix(80% currentColor, 20% black),
+                 0 1px color-mix(80% currentColor, 20% black),
+                 -1px 0 color-mix(80% currentColor, 20% black),
+                 0 -1px color-mix(80% currentColor, 20% black) !important;
+}
+
 .container {
     height: fit-content;
 }
@@ -269,17 +276,37 @@ h3 {
     background: rgb(211, 155, 188);
 }
 
+.orange-bg {
+    background: rgb(211, 188, 155)
+}
+
 .button-base {
     height: auto;
     font: inherit;
-    --button-color: lightgrey;
+    --button-base: lightgrey;
+    --button-color: var(--button-base);
     color: var(--button-color);
-    --bg-color: #444444;
+    --bg-base: #444444;
+    --bg-color: var(--bg-base);
     background-color: var(--bg-color);
     border: 0;
-    padding: 2px;
+    padding: 2px 4px;
     box-shadow: color-mix(in srgb, var(--bg-color) 50%, #000000 50%) 1px 1px, color-mix(in srgb, var(--bg-color) 25%, #000000 75%) 2px 2px;
     transition: all 0.1s ease-in-out
+}
+
+.button-base:active {
+    transform: translate(2px, 2px);
+    box-shadow: color-mix(in srgb, var(--bg-color) 50%, #000000 50%) 1px 1px;
+}
+
+.beast-energy-button {
+    --bg-base: #f077bb;
+}
+
+.unaffordable {
+    --bg-color: color-mix(in srgb, var(--bg-base) 20%, grey);
+    --button-color: color-mix(in srgb, var(--button-base) 50%, grey);
 }
 
 .green-button {
@@ -295,11 +322,15 @@ h3 {
     border-style: outset;
 }
 
-/*
-.show-tooltip:hover .tooltip {
-    opacity: 1;
+.buyable-item {
+    width: auto;
+    aspect-ratio: 2;
+    min-width: 0;
+    border: 5px solid grey;
+    background-color: rgb(192, 192, 192);
+    border-style: outset;
 }
-*/
+
 body:has(.show-tooltip:hover) .tooltip {
     opacity: 1;
 }
@@ -343,6 +374,10 @@ body:has(.show-tooltip:hover) .tooltip {
     color: rgb(96, 96, 96);
 }
 
+.small-text {
+    font-size: small;
+}
+
 .climbing {
     color: #9bbcd3;
 }
@@ -361,6 +396,72 @@ body:has(.show-tooltip:hover) .tooltip {
     text-shadow: 0px 0px 6px #b000ff;
 }
 
+@keyframes beast-animation {
+    from,
+    20% {
+        text-shadow: 0px 0px 1px #f00099;
+    }
+
+    50% {
+        text-shadow: 2px 0px 1px #f00099;
+    }
+
+    90%,
+    to {
+        text-shadow: 0px 0px 1px #f00099;
+    }
+}
+
+.beast-energy {
+    color: #c00099;
+    animation: 5s infinite alternate beast-animation;
+}
+
+.prayers {
+    color: #ffbf00;
+}
+
 .damage {
     color: #ff3f00;
+}
+
+.hermes {
+    color: #00cfaf;
+    text-shadow: 1px 0 0 #00bfa8, 2px 0 0 #00af9f, 3px 0 0 #009f98, 4px 0 0 #008f90;
+}
+
+@keyframes bunya-animation {
+    from {
+        transform: translate(0px, 0px);
+    }
+
+    20% {
+        transform: translate(0px, -3.6px);
+    }
+
+    40% {
+        transform: translate(0px, -6.4px);
+    }
+
+    60% {
+        transform: translate(0px, -8.4px);
+    }
+
+    80% {
+        transform: translate(0px, -9.6px);
+    }
+
+    to {
+        transform: translate(0px, -10px);
+    }
+}
+
+.bunya {
+    color: #ffc0cb;
+    animation: 0.5s infinite alternate bunya-animation;
+}
+
+.beez {
+    color: #ffdf00;
+    text-shadow: 1px 0 0 #101000, 2px 0 0 #ffdf00;
 }

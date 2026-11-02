@@ -1,7 +1,11 @@
 function getExpMultiplier() {
-    let mul = new Decimal(1)
+    let base = new Decimal(1)
+    if (player.exp.upgrades[0]) base = base.mul(2)
+    base = base.mul(getExperienceUpgradeEffect(2))
 
-    return mul
+    base = base.mul(getShrineFavor(3))
+
+    return base
 }
 
 function getExpPow() {
@@ -12,9 +16,9 @@ function getExpPow() {
 }
 
 function getExperience(level) {
-    let base = Decimal.sumGeometricSeries(level, 10, 1.02, 0).mul(getExpMultiplier()).pow(getExpPow()).floor().div(100)
-    if (player.exp.upgrades[0]) base = base.mul(2)
-    base = base.mul(getExperienceUpgradeEffect(2))
+    let base_level = level
+    base_level = base_level.mul(getShrineFavor(1))
+    let base = Decimal.sumGeometricSeries(base_level, 10, 1.02, 0).mul(getExpMultiplier()).pow(getExpPow()).floor().div(100)
 
     return base
 }
@@ -48,7 +52,7 @@ function getExpUpgradeCost(i) {
         case 2: return new Decimal(player.exp.upgrades[2]).add(1).pow(1.5).round()
         case 3: return new Decimal(player.exp.upgrades[3]).pow_base(10).mul(50);
         case 4: return new Decimal(100)
-        case 5: return new Decimal(player.exp.upgrades[5]).mul(20).pow(2.25).round();
+        case 5: return new Decimal(player.exp.upgrades[5]).add(1).mul(20).pow(2.25).round();
         case 6: return new Decimal(1000).mul(player.exp.upgrades[6] + 1)
         case 7: return new Decimal(100000)
         default: console.error("Unknown exp upgrade amount: ", i); return new Decimal(0)

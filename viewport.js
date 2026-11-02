@@ -21,9 +21,11 @@ function updateDisplay(bx, by) {
 updateDisplay(0, 0);
 
 viewport.addEventListener("mousedown", (e) => {
-    mouseX = e.clientX
-    mouseY = e.clientY
-    isMouseDown = true
+    if (!(e.which === 3 || e.button === 2)) { // thanks stackoverflow
+        mouseX = e.clientX
+        mouseY = e.clientY
+        isMouseDown = true
+    }
 })
 
 viewport.addEventListener("mousemove", (e) => {

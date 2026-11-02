@@ -1,4 +1,6 @@
 function decimalise(obj) {
+    if (obj === null) return obj
+
     if (Array.isArray(obj)) {
         for (let i in obj) {
             obj[i] = decimalise(obj[i])
@@ -28,6 +30,11 @@ function decimalise(obj) {
     } else {
         return obj
     }
+}
+
+function distinct(obj) {
+    // god damn it js
+    return decimalise(JSON.parse(JSON.stringify(obj)))
 }
 
 function save() {
@@ -83,9 +90,14 @@ function validate_save() {
                 console.log("Updated save from indev_2 => indev_3")
                 player.version = "indev_3"
             case "indev_3":
-                player.magic = default_player.magic
+                player.magic = distinct(default_player.magic)
                 console.log("Updated save from indev_3 => indev_4")
                 player.version = "indev_4"
+            case "indev_4":
+                player.exp.total = player.exp.value
+                player.magic.total = player.magic.value
+                console.log("Updated save from indev_4 => indev_5")
+                player.version = "indev_5"
         }
     }
 }
