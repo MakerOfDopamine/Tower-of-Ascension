@@ -8,4 +8,11 @@ Now that I have some more skill, this is a perfect time for me to revive this pr
 The premise of the game is that you climb this huge tower (this is an idle game, after all.) that has various gameplay features unlocked as you reach higher and higher floors.
 AS OF THE CURRENT RELEASE, there is currently NO features that I've actually programmed yet. So have fun watching number go up(tm)!
 
+# HOW TO PLAY
+ugh why do I have to add this. 
+
+open the tab at https://makerofdopamine.github.io/Tower-of-Ascension to play.
+
+![here is the game running!](running.png)
+
 There is no lore. Don't touch the orb. /silly
